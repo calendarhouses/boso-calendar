@@ -38,7 +38,7 @@
             mode: "range", minDate: "today", locale: "uk", dateFormat: "Y-m-d"
         });
 
-        document.getElementById('confirmBtn').onclick = async function() {
+        document.getElementById('confirmBtn').onclick = function() {
             if (fp.selectedDates.length < 2) {
                 alert("⚓ Оберіть дату заїзду та виїзду!");
                 return;
@@ -54,45 +54,19 @@
             this.disabled = true;
             document.getElementById('message').innerText = "⚓ Передаю дані...";
 
-            // Твій API ключ зі SmartSender
-            const API_KEY = "0puJPiUy8jTXgUTqs6PkMIkpeY2PInbveORpUhT2cmRr7JnGOKwWwT3IOb";
+            // Твоє посилання від Google
+            const googleUrl = "https://script.google.com/macros/s/AKfycbwQNcWFZPXQHNY4VRUUujMIqJsHXA5O-vNmvKICxwQfiJfQH71AZlHQUU74OSFfwEOxrw/exec";
 
-            try {
-                // 1. Записуємо дати прямо в твої змінні
-                await fetch(`https://api.smartsender.com/v1/contacts/${userId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${API_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        variables: {
-                            check_in: checkIn,
-                            check_out: checkOut
-                        }
-                    })
-                });
+            // Формуємо фінальний запит
+            const finalUrl = `${googleUrl}?userId=${userId}&checkIn=${checkIn}&checkOut=${checkOut}`;
 
-                // 2. Смикаємо тригер (подію), щоб бот відправив наступне повідомлення
-                await fetch(`https://api.smartsender.com/v1/contacts/${userId}/fire`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${API_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        name: "dates_selected"
-                    })
-                });
-
-                // Миттєво закриваємо вікно
-                if (tg) tg.close();
-
-            } catch (error) {
-                console.error("Помилка:", error);
-                document.getElementById('message').innerText = "❌ Сталася помилка. Спробуйте ще раз.";
-                this.disabled = false;
-            }
+            // Відправляємо дані у фоні (no-cors обходить всі блокування браузера)
+            fetch(finalUrl, { mode: 'no-cors' })
+                .then(() => {
+                    // Чекаємо півсекунди і закриваємо вікно
+                    setTimeout(() => { if (tg) tg.close(); }, 500);
+                })
+                .catch(e => console.log(e));
         };
     </script>
 </body>
