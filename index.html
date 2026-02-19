@@ -34,52 +34,43 @@
     <script src="https://npmcdn.com/flatpickr/dist/l10n/uk.js"></script>
 
     <script>
-        // 1. Отримуємо ID клієнта
         const urlParams = new URLSearchParams(window.location.search);
         const userId = urlParams.get('user_id');
 
-        let checkInDate = "";
-        let checkOutDate = "";
-
-        // 2. Налаштовуємо календар
+        // Ініціалізуємо календар і зберігаємо його в змінну fp
         const fp = flatpickr("#dateRange", {
             mode: "range",
             minDate: "today",
             locale: "uk",
-            dateFormat: "Y-m-d",
-            onChange: function(selectedDates) {
-                if (selectedDates.length === 2) {
-                    checkInDate = selectedDates[0].toISOString().split('T')[0];
-                    checkOutDate = selectedDates[1].toISOString().split('T')[0];
-                }
-            }
+            dateFormat: "Y-m-d"
         });
 
-        // 3. Логіка кнопки
         document.getElementById('confirmBtn').onclick = function() {
-            console.log("Кнопка натиснута"); // Для перевірки в консолі
+            // Перевіряємо, скільки дат обрано прямо в календарі
+            const selectedDates = fp.selectedDates;
 
-            // Перевірка наявності ID
+            if (selectedDates.length < 2) {
+                alert("Капітан просить обрати повний період: заїзд та виїзд!");
+                return;
+            }
+
             if (!userId) {
-                alert("Помилка: Капітан не бачить вашого ID. Відкрийте посилання через бота!");
+                alert("Помилка: не знайдено ID. Відкрийте через бота.");
                 return;
             }
 
-            // Перевірка обраних дат
-            if (!checkInDate || !checkOutDate) {
-                alert("Будь ласка, оберіть діапазон дат (заїзд та виїзд)!");
-                return;
-            }
+            // Форматуємо дати в текст YYYY-MM-DD
+            const checkIn = fp.formatDate(selectedDates[0], "Y-m-d");
+            const checkOut = fp.formatDate(selectedDates[1], "Y-m-d");
 
             document.getElementById('message').innerText = "Швартуємо ваші дати... ⛵";
             this.disabled = true;
 
-            // Посилання на твій віджет
             const baseLink = "https://boso.customer.smartsender.eu/lp/bUrOj1M5";
-            const finalUrl = baseLink + "?u=" + userId + "&check_in=" + checkInDate + "&check_out=" + checkOutDate;
+            const finalUrl = `${baseLink}?u=${userId}&check_in=${checkIn}&check_out=${checkOut}`;
 
-            // Фінальний стрибок
-            window.location.replace(finalUrl);
+            // Виконуємо перехід
+            window.location.href = finalUrl;
         };
     </script>
 </body>
