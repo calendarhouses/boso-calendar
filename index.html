@@ -8,20 +8,13 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; padding: 20px; text-align: center; background-color: #f9f6f0; overflow-x: hidden; }
         .bosman-avatar { width: 120px; height: 120px; border-radius: 50%; border: 4px solid #8f9779; margin-bottom: 10px; object-fit: cover; transition: 0.3s; }
-        
         .step-container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 320px; margin: 0 auto; display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
         .step-container.active { display: block; opacity: 1; transform: translateY(0); }
-        
         h2 { color: #2c3e50; font-size: 20px; margin-top: 5px; margin-bottom: 5px; }
         p.subtitle { color: #7f8c8d; font-size: 14px; margin-top: 0; margin-bottom: 20px; }
-        
         input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; text-align: center; font-size: 16px; outline: none; box-sizing: border-box; margin-bottom: 15px; }
-        input:focus { border-color: #8f9779; }
-        
         button { background-color: #8f9779; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; margin-bottom: 10px; }
-        button:active { transform: scale(0.98); background-color: #7a8266; }
         .btn-outline { background-color: white; color: #8f9779; border: 2px solid #8f9779; }
-        
         #message { margin-top: 15px; font-weight: bold; color: #8f9779; display: none; }
     </style>
 </head>
@@ -54,7 +47,7 @@
         <button class="btn-outline" onclick="goBack(3)" style="border: none; margin-top: 10px;">Назад</button>
     </div>
 
-    <div id="message">⚓ Передаю дані...</div>
+    <div id="message">⚓ Перевіряємо вільні дати...</div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/uk.js"></script>
@@ -66,6 +59,9 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const userId = tg.initDataUnsafe?.user?.id || urlParams.get('user_id');
+        
+        // ЛОВИМО ID КОТЕДЖУ З ПОСИЛАННЯ!
+        const roomId = urlParams.get('room_id');
 
         let finalCheckIn = "", finalCheckOut = "", finalGuests = "", finalPets = "";
 
@@ -108,25 +104,26 @@
         }
 
         function submitData(chanAnswer) {
-            if (!userId) { alert("Помилка: Відкрийте через бота."); return; }
+            if (!roomId) { alert("Капітан не бачить, який котедж ви обрали! Закрийте календар і натисніть кнопку ще раз."); return; }
 
             document.querySelectorAll('.step-container').forEach(el => el.style.display = 'none');
             const msgDiv = document.getElementById('message');
             msgDiv.style.display = 'block';
-            updateHeader("Майже готово!", "Пакуємо ваші дані...");
+            updateHeader("Майже готово!", "Перевіряємо у базі...");
 
+            // ТВОЄ ПОСИЛАННЯ НА GOOGLE SCRIPT (Я додав туди &roomId=${roomId})
             const googleUrl = "https://script.google.com/macros/s/AKfycbwQNcWFZPXQHNY4VRUUujMIqJsHXA5O-vNmvKICxwQfiJfQH71AZlHQUU74OSFfwEOxrw/exec";
-            const finalUrl = `${googleUrl}?userId=${userId}&checkIn=${finalCheckIn}&checkOut=${finalCheckOut}&guests=${finalGuests}&pets=${finalPets}&chan=${chanAnswer}`;
+            const finalUrl = `${googleUrl}?userId=${userId}&checkIn=${finalCheckIn}&checkOut=${finalCheckOut}&guests=${finalGuests}&pets=${finalPets}&chan=${chanAnswer}&roomId=${roomId}`;
 
             fetch(finalUrl, { mode: 'no-cors' })
                 .then(() => {
                     msgDiv.style.color = "#4CAF50"; 
-                    msgDiv.innerText = "✅ Готово! Повертайтеся в Telegram";
+                    msgDiv.innerText = "✅ Дані відправлено! Повертайтеся в чат";
                     setTimeout(() => { if (tg) tg.close(); }, 2000);
                 })
                 .catch(e => {
                     msgDiv.style.color = "#4CAF50";
-                    msgDiv.innerText = "✅ Дати відправлено! Можете закрити вікно.";
+                    msgDiv.innerText = "✅ Готово! Можете закрити вікно.";
                     setTimeout(() => { if (tg) tg.close(); }, 2000);
                 });
         }
