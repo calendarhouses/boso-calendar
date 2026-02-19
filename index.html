@@ -31,7 +31,6 @@
         const tg = window.Telegram.WebApp;
         if (tg) { tg.expand(); tg.ready(); }
 
-        // Отримуємо user_id безпечно з Telegram (або з посилання для тестів)
         const urlParams = new URLSearchParams(window.location.search);
         const userId = tg.initDataUnsafe?.user?.id || urlParams.get('user_id');
 
@@ -39,14 +38,13 @@
             mode: "range", minDate: "today", locale: "uk", dateFormat: "Y-m-d"
         });
 
-        document.getElementById('confirmBtn').onclick = function() {
+        document.getElementById('confirmBtn').onclick = async function() {
             if (fp.selectedDates.length < 2) {
-                alert("Оберіть заїзд та виїзд!");
+                alert("⚓ Оберіть дату заїзду та виїзду!");
                 return;
             }
-            
             if (!userId) {
-                alert("Помилка: Не вдалося отримати ID. Відкрийте календар через Telegram бота.");
+                alert("Помилка: Відкрийте календар через бота.");
                 return;
             }
 
@@ -54,30 +52,47 @@
             const checkOut = fp.formatDate(fp.selectedDates[1], "Y-m-d");
             
             this.disabled = true;
-            document.getElementById('message').innerText = "⚓ Передаю Капітану...";
+            document.getElementById('message').innerText = "⚓ Передаю дані...";
 
-            // Твій Webhook з Make.com
-            const webhookUrl = "https://hook.eu1.make.com/sj32apgltvabuztqsh3eyjrboua9chl9";
+            // Твій API ключ зі SmartSender
+            const API_KEY = "0puJPiUy8jTXgUTqs6PkMIkpeY2PInbveORpUhT2cmRr7JnGOKwWwT3IOb";
 
-            // Відправляємо дані фоново
-            fetch(webhookUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: userId,
-                    check_in: checkIn,
-                    check_out: checkOut
-                })
-            })
-            .then(response => {
-                // Якщо відправилось успішно - миттєво закриваємо WebApp
-                if (tg) tg.close(); 
-            })
-            .catch(error => {
+            try {
+                // 1. Записуємо дати прямо в твої змінні
+                await fetch(`https://api.smartsender.com/v1/contacts/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        variables: {
+                            check_in: checkIn,
+                            check_out: checkOut
+                        }
+                    })
+                });
+
+                // 2. Смикаємо тригер (подію), щоб бот відправив наступне повідомлення
+                await fetch(`https://api.smartsender.com/v1/contacts/${userId}/fire`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: "dates_selected"
+                    })
+                });
+
+                // Миттєво закриваємо вікно
+                if (tg) tg.close();
+
+            } catch (error) {
                 console.error("Помилка:", error);
-                document.getElementById('message').innerText = "❌ Помилка з'єднання";
+                document.getElementById('message').innerText = "❌ Сталася помилка. Спробуйте ще раз.";
                 this.disabled = false;
-            });
+            }
         };
     </script>
 </body>
