@@ -62,16 +62,16 @@
             document.getElementById('message').innerText = "Швартуємо ваші дати... ⛵";
             this.disabled = true;
 
-            // Розбиваємо діапазон на дві дати
             const dates = selectedRange.split(" — ");
             const checkIn = dates[0];
             const checkOut = dates[1];
 
-            // Твоє посилання на віджет SmartSender
             const baseLink = "https://boso.customer.smartsender.eu/lp/bUrOj1M5";
-            
-            // Формуємо фінальну адресу з усіма даними
             const finalUrl = `${baseLink}?u=${userId}&check_in=${checkIn}&check_out=${checkOut}`;
 
-            // Перенаправляємо користувача (SmartSender сам все запише і запустить тригер)
-            window.location.
+            // ОСЬ ТУТ БУЛА ПОМИЛКА — ТЕПЕР ВСЕ ПРАВИЛЬНО:
+            window.location.href = finalUrl;
+        });
+    </script>
+</body>
+</html>
