@@ -6,126 +6,44 @@
     <title>Бронювання - BOSO</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; text-align: center; background-color: #f9f6f0; }
-        .bosman-avatar { width: 130px; height: 130px; object-fit: cover; border-radius: 50%; border: 4px solid #8f9779; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: 0 auto 10px; display: block; }
-        h2 { color: #2c3e50; font-size: 22px; margin-top: 10px; }
-        p.subtitle { color: #5a5a5a; font-size: 15px; margin-top: -10px; margin-bottom: 20px; }
-        #calendar-container { margin: 0 auto 20px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 350px; }
-        input[type="text"] { width: 100%; padding: 12px; margin-top: 10px; border: 2px solid #e0e0e0; border-radius: 8px; box-sizing: border-box; font-size: 16px; text-align: center; outline: none; transition: border 0.3s; }
-        input[type="text"]:focus { border-color: #8f9779; }
-        button { background-color: #8f9779; color: white; border: none; padding: 14px 24px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; max-width: 350px; transition: background 0.3s; box-shadow: 0 4px 6px rgba(143, 151, 121, 0.3); }
-        button:hover { background-color: #7a8266; }
-        button:disabled { background-color: #b0b5a3; cursor: not-allowed; box-shadow: none; }
-        #message { margin-top: 15px; font-weight: bold; font-size: 14px; word-wrap: break-word; }
+        body { font-family: sans-serif; padding: 20px; text-align: center; background-color: #f9f6f0; }
+        .bosman-avatar { width: 120px; height: 120px; border-radius: 50%; margin-bottom: 10px; border: 3px solid #8f9779; }
+        #calendar-container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 320px; margin: 0 auto 20px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; text-align: center; font-size: 16px; }
+        button { background: #8f9779; color: white; border: none; padding: 15px; width: 100%; max-width: 320px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        #message { margin-top: 15px; font-size: 14px; }
     </style>
 </head>
 <body>
-
-    <img src="bosman.jpg" alt="Капітан Босман" class="bosman-avatar" onerror="this.style.display='none'">
-    
-    <h2>Капітан Босман вітає! ⚓</h2>
-    <p class="subtitle">Оберіть дати вашого відпочинку</p>
-
-    <div id="calendar-container">
-        <input type="text" id="dateRange" placeholder="Натисніть сюди..." readonly>
-    </div>
-    <button id="confirmBtn">Підтвердити дати</button>
+    <img src="bosman.jpg" class="bosman-avatar" onerror="this.style.display='none'">
+    <h2>Капітан Босман вітає!⚓</h2>
+    <div id="calendar-container"><input type="text" id="dateRange" readonly placeholder="Оберіть дати..."></div>
+    <button id="confirmBtn">Підтвердити</button>
     <div id="message"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/uk.js"></script>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
     <script>
-        const SMARTSENDER_TOKEN = "0puJPiUy8jTXgUTqs6PkMlkpeY2PlnbveORpUhT2cmRr7JnGOKwWwT3IOboR"; 
-        
         const urlParams = new URLSearchParams(window.location.search);
         const userId = urlParams.get('user_id');
+        let dates = "";
 
-        let checkInDate = "";
-        let checkOutDate = "";
-
-        flatpickr("#dateRange", {
-            mode: "range",
-            minDate: "today",
-            locale: "uk",
-            dateFormat: "Y-m-d",
-            onChange: function(selectedDates, dateStr, instance) {
-                if (selectedDates.length === 2) {
-                    checkInDate = instance.formatDate(selectedDates[0], "Y-m-d");
-                    checkOutDate = instance.formatDate(selectedDates[1], "Y-m-d");
-                } else {
-                    checkInDate = "";
-                    checkOutDate = "";
-                }
-            }
+        flatpickr("#dateRange", { mode: "range", minDate: "today", locale: "uk",
+            onChange: function(selectedDates, dateStr) { dates = dateStr; }
         });
 
-        document.getElementById('confirmBtn').addEventListener('click', async function() {
-            if (!checkInDate || !checkOutDate) {
-                alert("Капітан просить обрати повний період: заїзд та виїзд!");
-                return;
-            }
-            if (!userId) {
-                alert("Помилка: не знайдено ID клієнта. Відкрийте календар через бота.");
-                return;
-            }
-
-            let msgDiv = document.getElementById('message');
-            msgDiv.innerText = "Швартуємо ваші дати... ⛵";
-            msgDiv.style.color = "#8f9779";
+        document.getElementById('confirmBtn').onclick = function() {
+            if (!dates || !userId) return alert("Оберіть дати!");
             this.disabled = true;
+            document.getElementById('message').innerText = "Відправляємо дані...⛵";
 
-            try {
-                // Крок 1: Записуємо змінні (новий формат SmartSender)
-                let varResponse = await fetch(`https://api.smartsender.com/v1/contacts/${userId}/variables`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json', 
-                        'Authorization': `Bearer ${SMARTSENDER_TOKEN}`,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ 
-                        variables: [
-                            { name: "check_in", value: checkInDate },
-                            { name: "check_out", value: checkOutDate }
-                        ]
-                    })
-                });
-
-                let varResult = await varResponse.text();
-                if (!varResponse.ok) throw new Error("Помилка бази: " + varResult);
-
-                // Крок 2: Смикаємо тригер
-                let fireResponse = await fetch(`https://api.smartsender.com/v1/contacts/${userId}/fire`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json', 
-                        'Authorization': `Bearer ${SMARTSENDER_TOKEN}`,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ name: "dates_selected" })
-                });
-
-                let fireResult = await fireResponse.text();
-                if (!fireResponse.ok) throw new Error("Помилка тригера: " + fireResult);
-
-                // Якщо все добре:
-                msgDiv.innerText = "✅ Готово! Повертайтеся в чат.";
-                msgDiv.style.color = "#27ae60";
-                
-                if (window.Telegram && window.Telegram.WebApp) {
-                    setTimeout(() => window.Telegram.WebApp.close(), 2000);
-                }
-
-            } catch (error) {
-                console.error(error);
-                // Виводимо ТОЧНУ помилку на екран
-                msgDiv.innerText = "❌ " + error.message;
-                msgDiv.style.color = "#c0392b";
-                this.disabled = false;
-            }
-        });
+            // Перенаправляємо на спеціальне посилання SmartSender, яке саме запише дані
+            const d = dates.split(" — ");
+            const link = `https://dao.smartsender.com/li/ваша_силка_тут?u=${userId}&check_in=${d[0]}&check_out=${d[1]}`;
+            
+            // Замість складного запиту просто відкриваємо це посилання в фоні або переходимо
+            window.location.href = link;
+        };
     </script>
 </body>
 </html>
