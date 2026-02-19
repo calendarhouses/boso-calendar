@@ -6,66 +6,55 @@
     <title>BOSO Booking</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            padding: 20px; 
-            text-align: center; 
-            background-color: #f9f6f0; 
-        }
-        .bosman-avatar { 
-            width: 120px; 
-            height: 120px; 
-            border-radius: 50%; 
-            border: 4px solid #8f9779; 
-            margin-bottom: 10px; 
-        }
-        #calendar-container { 
-            background: white; 
-            padding: 15px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-            max-width: 320px; 
-            margin: 0 auto 15px; 
-        }
-        input { 
-            width: 100%; 
-            padding: 12px; 
-            border: 2px solid #e0e0e0; 
-            border-radius: 8px; 
-            text-align: center; 
-            font-size: 16px; 
-            outline: none; 
-            box-sizing: border-box; /* Вирівнює поле, щоб не вилазило за краї */
-            cursor: pointer; /* Робить курсор у вигляді ручки при наведенні */
-        }
-        button { 
-            background-color: #8f9779; 
-            color: white; 
-            border: none; 
-            padding: 15px; 
-            width: 100%; 
-            max-width: 320px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            cursor: pointer; 
-        }
-        #message { 
-            margin-top: 15px; 
-            font-weight: bold; 
-            color: #8f9779; 
-        }
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; text-align: center; background-color: #f9f6f0; overflow-x: hidden; }
+        .bosman-avatar { width: 120px; height: 120px; border-radius: 50%; border: 4px solid #8f9779; margin-bottom: 10px; object-fit: cover; transition: 0.3s; }
+        
+        .step-container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 320px; margin: 0 auto; display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
+        .step-container.active { display: block; opacity: 1; transform: translateY(0); }
+        
+        h2 { color: #2c3e50; font-size: 20px; margin-top: 5px; margin-bottom: 5px; }
+        p.subtitle { color: #7f8c8d; font-size: 14px; margin-top: 0; margin-bottom: 20px; }
+        
+        input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; text-align: center; font-size: 16px; outline: none; box-sizing: border-box; margin-bottom: 15px; }
+        input:focus { border-color: #8f9779; }
+        
+        button { background-color: #8f9779; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; margin-bottom: 10px; }
+        button:active { transform: scale(0.98); background-color: #7a8266; }
+        .btn-outline { background-color: white; color: #8f9779; border: 2px solid #8f9779; }
+        
+        #message { margin-top: 15px; font-weight: bold; color: #8f9779; display: none; }
     </style>
 </head>
 <body>
-    <img src="bosman.jpg" alt="Капітан Босман" class="bosman-avatar" onerror="this.style.display='none'">
-    <h2>⚓ Оберіть дати відпочинку в BOSO</h2>
-    
-    <div id="calendar-container">
+
+    <img id="main-img" src="bosman.jpg" alt="Капітан Босман" class="bosman-avatar" onerror="this.src='https://via.placeholder.com/120?text=BOSO'">
+    <h2 id="main-title">Оберіть дати відпочинку ⚓</h2>
+    <p id="main-subtitle" class="subtitle">Коли плануєте заїзд та виїзд?</p>
+
+    <div id="step-1" class="step-container active">
         <input type="text" id="dateRange" placeholder="Натисніть для вибору..." readonly>
+        <button onclick="goToStep2()">Далі</button>
     </div>
-    
-    <button id="confirmBtn" type="button">Підтвердити</button>
-    <div id="message"></div>
+
+    <div id="step-2" class="step-container">
+        <input type="number" id="guestsInput" placeholder="Наприклад: 2" min="1" max="10">
+        <button onclick="goToStep3()">Далі</button>
+        <button class="btn-outline" onclick="goBack(1)" style="padding: 10px; font-size: 14px; margin-top: 5px;">Назад</button>
+    </div>
+
+    <div id="step-3" class="step-container">
+        <button onclick="goToStep4('Так')">🐶 Так, ми з хвостиком</button>
+        <button class="btn-outline" onclick="goToStep4('Ні')">Ні, без тварин</button>
+        <button class="btn-outline" onclick="goBack(2)" style="border: none; margin-top: 10px;">Назад</button>
+    </div>
+
+    <div id="step-4" class="step-container">
+        <button onclick="submitData('Так')">♨️ Так, обов'язково!</button>
+        <button class="btn-outline" onclick="submitData('Ні')">Ні, дякую</button>
+        <button class="btn-outline" onclick="goBack(3)" style="border: none; margin-top: 10px;">Назад</button>
+    </div>
+
+    <div id="message">⚓ Передаю дані...</div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/uk.js"></script>
@@ -73,62 +62,74 @@
 
     <script>
         const tg = window.Telegram.WebApp;
-        if (tg) { 
-            tg.expand(); 
-            tg.ready(); 
-        }
+        if (tg) { tg.expand(); tg.ready(); }
 
         const urlParams = new URLSearchParams(window.location.search);
         const userId = tg.initDataUnsafe?.user?.id || urlParams.get('user_id');
 
-        const fp = flatpickr("#dateRange", {
-            mode: "range", 
-            minDate: "today", 
-            locale: "uk", 
-            dateFormat: "Y-m-d"
-        });
+        let finalCheckIn = "", finalCheckOut = "", finalGuests = "", finalPets = "";
 
-        document.getElementById('confirmBtn').onclick = function() {
-            if (fp.selectedDates.length < 2) {
-                alert("⚓ Оберіть дату заїзду та виїзду!");
-                return;
-            }
-            if (!userId) {
-                alert("Помилка: Відкрийте календар через бота.");
-                return;
-            }
+        const fp = flatpickr("#dateRange", { mode: "range", minDate: "today", locale: "uk", dateFormat: "Y-m-d" });
 
-            const checkIn = fp.formatDate(fp.selectedDates[0], "Y-m-d");
-            const checkOut = fp.formatDate(fp.selectedDates[1], "Y-m-d");
-            
-            this.disabled = true;
+        function updateHeader(title, subtitle) {
+            document.getElementById('main-title').innerText = title;
+            document.getElementById('main-subtitle').innerText = subtitle;
+        }
+
+        function showStep(stepNumber) {
+            document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+            setTimeout(() => { document.getElementById('step-' + stepNumber).classList.add('active'); }, 50);
+        }
+
+        function goToStep2() {
+            if (fp.selectedDates.length < 2) { alert("⚓ Оберіть заїзд та виїзд!"); return; }
+            finalCheckIn = fp.formatDate(fp.selectedDates[0], "Y-m-d");
+            finalCheckOut = fp.formatDate(fp.selectedDates[1], "Y-m-d");
+            updateHeader("Скільки вас буде?", "Вкажіть кількість осіб"); showStep(2);
+        }
+
+        function goToStep3() {
+            const guests = document.getElementById('guestsInput').value;
+            if (!guests || guests < 1) { alert("Вкажіть кількість гостей!"); return; }
+            finalGuests = guests;
+            updateHeader("Ви з пухнастиком?", "Ми дружні до тварин"); showStep(3);
+        }
+
+        function goToStep4(petAnswer) {
+            finalPets = petAnswer;
+            updateHeader("Бажаєте гарячий чан?", "Ідеально для вечірнього релаксу"); showStep(4);
+        }
+
+        function goBack(stepNumber) {
+            if(stepNumber === 1) updateHeader("Оберіть дати відпочинку ⚓", "Коли плануєте заїзд та виїзд?");
+            if(stepNumber === 2) updateHeader("Скільки вас буде?", "Вкажіть кількість осіб");
+            if(stepNumber === 3) updateHeader("Ви з пухнастиком?", "Ми дружні до тварин");
+            showStep(stepNumber);
+        }
+
+        function submitData(chanAnswer) {
+            if (!userId) { alert("Помилка: Відкрийте через бота."); return; }
+
+            document.querySelectorAll('.step-container').forEach(el => el.style.display = 'none');
             const msgDiv = document.getElementById('message');
-            msgDiv.innerText = "⚓ Передаю дані...";
+            msgDiv.style.display = 'block';
+            updateHeader("Майже готово!", "Пакуємо ваші дані...");
 
-            // Посилання на твій скрипт-проксі в Google
             const googleUrl = "https://script.google.com/macros/s/AKfycbwQNcWFZPXQHNY4VRUUujMIqJsHXA5O-vNmvKICxwQfiJfQH71AZlHQUU74OSFfwEOxrw/exec";
-            const finalUrl = `${googleUrl}?userId=${userId}&checkIn=${checkIn}&checkOut=${checkOut}`;
+            const finalUrl = `${googleUrl}?userId=${userId}&checkIn=${finalCheckIn}&checkOut=${finalCheckOut}&guests=${finalGuests}&pets=${finalPets}&chan=${chanAnswer}`;
 
-            // Фонова відправка даних
             fetch(finalUrl, { mode: 'no-cors' })
                 .then(() => {
-                    // Змінюємо текст на успішний та фарбуємо в зелений
                     msgDiv.style.color = "#4CAF50"; 
                     msgDiv.innerText = "✅ Готово! Повертайтеся в Telegram";
-                    
-                    // Закриваємо вікно через 2 секунди (для мобільних)
-                    setTimeout(() => { 
-                        if (tg) tg.close(); 
-                    }, 2000);
+                    setTimeout(() => { if (tg) tg.close(); }, 2000);
                 })
                 .catch(e => {
-                    console.error(e);
-                    // Якщо щось пішло не так на рівні браузера, все одно показуємо успіх, 
-                    // бо дані через no-cors зазвичай вже полетіли
                     msgDiv.style.color = "#4CAF50";
                     msgDiv.innerText = "✅ Дати відправлено! Можете закрити вікно.";
+                    setTimeout(() => { if (tg) tg.close(); }, 2000);
                 });
-        };
+        }
     </script>
 </body>
 </html>
