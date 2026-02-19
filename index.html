@@ -1,1 +1,114 @@
-Привіт
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вибір дат - BerBen House</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; text-align: center; background-color: #f4f7f6; }
+        h2 { color: #2c3e50; font-size: 22px; }
+        #calendar-container { margin: 20px auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 350px; }
+        input[type="text"] { width: 100%; padding: 12px; margin-top: 10px; border: 2px solid #e0e0e0; border-radius: 8px; box-sizing: border-box; font-size: 16px; text-align: center; outline: none; transition: border 0.3s; }
+        input[type="text"]:focus { border-color: #27ae60; }
+        button { background-color: #27ae60; color: white; border: none; padding: 14px 24px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 20px; width: 100%; max-width: 350px; transition: background 0.3s; }
+        button:hover { background-color: #219653; }
+        button:disabled { background-color: #95a5a6; cursor: not-allowed; }
+        #message { margin-top: 15px; font-weight: bold; font-size: 15px; }
+    </style>
+</head>
+<body>
+
+    <h2>Оберіть дати проживання 🏔️</h2>
+    <div id="calendar-container">
+        <input type="text" id="dateRange" placeholder="Натисніть сюди..." readonly>
+    </div>
+    <button id="confirmBtn">Підтвердити дати</button>
+    <div id="message"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/uk.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <script>
+        // =================================================================
+        // 🛑 УВАГА: ВСТАВ СВІЙ ТОКЕН ЗІ SMARTSENDER МІЖ ЛАПКАМИ НИЖЧЕ 🛑
+        // =================================================================
+        const SMARTSENDER_TOKEN = "0puJPiUy8jTXgUTqs6PkMlkpeY2PlnbveORpUhT2cmRr7JnGOKwWwT3IOboR"; 
+        
+        // Шукаємо ID клієнта в посиланні
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('user_id');
+
+        let checkInDate = "";
+        let checkOutDate = "";
+
+        // Запускаємо український календар з вибором діапазону (від сьогодні і далі)
+        flatpickr("#dateRange", {
+            mode: "range",
+            minDate: "today",
+            locale: "uk",
+            dateFormat: "Y-m-d",
+            onChange: function(selectedDates, dateStr, instance) {
+                if (selectedDates.length === 2) {
+                    checkInDate = instance.formatDate(selectedDates[0], "Y-m-d");
+                    checkOutDate = instance.formatDate(selectedDates[1], "Y-m-d");
+                } else {
+                    checkInDate = "";
+                    checkOutDate = "";
+                }
+            }
+        });
+
+        // Що відбувається, коли гість тисне кнопку
+        document.getElementById('confirmBtn').addEventListener('click', function() {
+            if (!checkInDate || !checkOutDate) {
+                alert("Будь ласка, оберіть повний період: дату заїзду та виїзду!");
+                return;
+            }
+            if (!userId) {
+                alert("Помилка: не знайдено ID клієнта. Будь ласка, відкрийте календар через меню бота.");
+                return;
+            }
+
+            // Текст очікування
+            document.getElementById('message').innerText = "Відправляємо гнома Бербена з даними... 🧙‍♂️";
+            document.getElementById('message').style.color = "#f39c12";
+            this.disabled = true;
+
+            // 1. Записуємо змінні у SmartSender
+            fetch(`https://api.smartsender.com/v1/contacts/${userId}/variables`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SMARTSENDER_TOKEN}` },
+                body: JSON.stringify({ variables: { check_in: checkInDate, check_out: checkOutDate } })
+            })
+            .then(response => {
+                // 2. Смикаємо за тригер dates_selected
+                return fetch(`https://api.smartsender.com/v1/contacts/${userId}/fire`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SMARTSENDER_TOKEN}` },
+                    body: JSON.stringify({ name: 'dates_selected' })
+                });
+            })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('message').innerText = "✅ Дати успішно збережено! Повертайтеся в чат.";
+                    document.getElementById('message').style.color = "#27ae60";
+                    // Якщо відкрито в Telegram Web App - закриваємо автоматично за 2 секунди
+                    if (window.Telegram && window.Telegram.WebApp) {
+                         setTimeout(() => window.Telegram.WebApp.close(), 2000);
+                    }
+                } else {
+                    throw new Error("Невірний токен або помилка API");
+                }
+            })
+            .catch(error => {
+                console.error("Помилка:", error);
+                document.getElementById('message').innerText = "❌ Сталася помилка. Перевірте налаштування.";
+                document.getElementById('message').style.color = "#c0392b";
+                document.getElementById('confirmBtn').disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>
