@@ -6,24 +6,16 @@
     <title>Бронювання - BOSO</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
-        /* Змінюємо фон на теплий пісочно-лляний відтінок */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; text-align: center; background-color: #f9f6f0; }
-        
-        /* Стиль для фото Босмана */
         .bosman-avatar { width: 130px; height: 130px; object-fit: cover; border-radius: 50%; border: 4px solid #8f9779; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: 0 auto 10px; display: block; }
-        
         h2 { color: #2c3e50; font-size: 22px; margin-top: 10px; }
         p.subtitle { color: #5a5a5a; font-size: 15px; margin-top: -10px; margin-bottom: 20px; }
-        
         #calendar-container { margin: 0 auto 20px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 350px; }
         input[type="text"] { width: 100%; padding: 12px; margin-top: 10px; border: 2px solid #e0e0e0; border-radius: 8px; box-sizing: border-box; font-size: 16px; text-align: center; outline: none; transition: border 0.3s; }
-        input[type="text"]:focus { border-color: #8f9779; } /* Колір хакі при виділенні */
-        
-        /* Кнопка в кольорі хакі */
+        input[type="text"]:focus { border-color: #8f9779; }
         button { background-color: #8f9779; color: white; border: none; padding: 14px 24px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; max-width: 350px; transition: background 0.3s; box-shadow: 0 4px 6px rgba(143, 151, 121, 0.3); }
         button:hover { background-color: #7a8266; }
         button:disabled { background-color: #b0b5a3; cursor: not-allowed; box-shadow: none; }
-        
         #message { margin-top: 15px; font-weight: bold; font-size: 15px; }
     </style>
 </head>
@@ -45,9 +37,6 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
     <script>
-        // =================================================================
-        // 🛑 УВАГА: ВСТАВ СВІЙ ТОКЕН ЗІ SMARTSENDER НИЖЧЕ 🛑
-        // =================================================================
         const SMARTSENDER_TOKEN = "0puJPiUy8jTXgUTqs6PkMlkpeY2PlnbveORpUhT2cmRr7JnGOKwWwT3IOboR"; 
         
         const urlParams = new URLSearchParams(window.location.search);
@@ -86,15 +75,22 @@
             document.getElementById('message').style.color = "#8f9779";
             this.disabled = true;
 
-            fetch(`https://api.smartsender.com/v1/contacts/${userId}/variables`, {
+            fetch(`https://api.smartsender.com/v1/contacts/${userId}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SMARTSENDER_TOKEN}` },
-                body: JSON.stringify({ variables: { check_in: checkInDate, check_out: checkOutDate } })
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${SMARTSENDER_TOKEN}` 
+                },
+                body: JSON.stringify({ values: { check_in: checkInDate, check_out: checkOutDate } })
             })
             .then(response => {
+                if (!response.ok) throw new Error("Помилка запису дат");
                 return fetch(`https://api.smartsender.com/v1/contacts/${userId}/fire`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SMARTSENDER_TOKEN}` },
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'Authorization': `Bearer ${SMARTSENDER_TOKEN}` 
+                    },
                     body: JSON.stringify({ name: 'dates_selected' })
                 });
             })
@@ -106,7 +102,7 @@
                          setTimeout(() => window.Telegram.WebApp.close(), 2000);
                     }
                 } else {
-                    throw new Error("Невірний токен");
+                    throw new Error("Помилка тригера");
                 }
             })
             .catch(error => {
