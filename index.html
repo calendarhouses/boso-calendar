@@ -27,51 +27,60 @@
     <div id="calendar-container">
         <input type="text" id="dateRange" placeholder="Натисніть сюди..." readonly>
     </div>
-    <button id="confirmBtn">Підтвердити дати</button>
+    <button id="confirmBtn" type="button">Підтвердити дати</button>
     <div id="message"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/uk.js"></script>
 
     <script>
+        // 1. Отримуємо ID клієнта
         const urlParams = new URLSearchParams(window.location.search);
         const userId = urlParams.get('user_id');
 
-        let selectedRange = "";
+        let checkInDate = "";
+        let checkOutDate = "";
 
-        flatpickr("#dateRange", {
+        // 2. Налаштовуємо календар
+        const fp = flatpickr("#dateRange", {
             mode: "range",
             minDate: "today",
             locale: "uk",
             dateFormat: "Y-m-d",
-            onChange: function(selectedDates, dateStr) {
-                selectedRange = dateStr;
+            onChange: function(selectedDates) {
+                if (selectedDates.length === 2) {
+                    checkInDate = selectedDates[0].toISOString().split('T')[0];
+                    checkOutDate = selectedDates[1].toISOString().split('T')[0];
+                }
             }
         });
 
-        document.getElementById('confirmBtn').addEventListener('click', function() {
-            if (!selectedRange.includes(" — ")) {
-                alert("Капітан просить обрати повний період: заїзд та виїзд!");
+        // 3. Логіка кнопки
+        document.getElementById('confirmBtn').onclick = function() {
+            console.log("Кнопка натиснута"); // Для перевірки в консолі
+
+            // Перевірка наявності ID
+            if (!userId) {
+                alert("Помилка: Капітан не бачить вашого ID. Відкрийте посилання через бота!");
                 return;
             }
-            if (!userId) {
-                alert("Помилка: не знайдено ID клієнта. Відкрийте календар через бота.");
+
+            // Перевірка обраних дат
+            if (!checkInDate || !checkOutDate) {
+                alert("Будь ласка, оберіть діапазон дат (заїзд та виїзд)!");
                 return;
             }
 
             document.getElementById('message').innerText = "Швартуємо ваші дати... ⛵";
             this.disabled = true;
 
-            const dates = selectedRange.split(" — ");
-            const checkIn = dates[0];
-            const checkOut = dates[1];
-
+            // Посилання на твій віджет
             const baseLink = "https://boso.customer.smartsender.eu/lp/bUrOj1M5";
-            const finalUrl = `${baseLink}?u=${userId}&check_in=${checkIn}&check_out=${checkOut}`;
+            const finalUrl = baseLink + "?u=" + userId + "&check_in=" + checkInDate + "&check_out=" + checkOutDate;
 
-            // ОСЬ ТУТ БУЛА ПОМИЛКА — ТЕПЕР ВСЕ ПРАВИЛЬНО:
-            window.location.href = finalUrl;
-        });
+            // Фінальний стрибок
+            window.location.replace(finalUrl);
+        };
     </script>
 </body>
 </html>
