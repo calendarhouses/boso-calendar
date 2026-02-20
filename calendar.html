@@ -56,7 +56,7 @@
         const roomId = urlParams.get('room_id');
         
         // ⚠️ ПОСИЛАННЯ НА ТВОЮ НОВУ РОЗВІДКУ ДАТ У GOOGLE SCRIPT
-        const googleScriptUrl = "ТВОЄ_ПОСИЛАННЯ_НА_НОВИЙ_СКРИПТ";
+        const googleScriptUrl = "https://script.google.com/macros/s/AKfycbzsTNRpYZ38kHrurbQ9q289W7PJdrPDr614Zjc07FiyMy663CJowAl_Rtnsftwb_jQQ/exec";
 
         fetch(`${googleScriptUrl}?roomId=${roomId}`)
             .then(response => response.json())
