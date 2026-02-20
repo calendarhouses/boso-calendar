@@ -25,32 +25,41 @@
         
         /* Блок ціни */
         #price-result { display: none; background: #fff; border: 2px solid #8f9779; border-radius: 12px; padding: 20px; margin: 0 auto 20px auto; max-width: 300px; box-shadow: 0 6px 15px rgba(143, 151, 121, 0.15); }
-        .price-nights { font-size: 15px; color: #7f8c8d; margin-bottom: 8px; font-weight: 500; }
-        /* Змінили для ідеального центрування */
+        .price-nights { font-size: 15px; color: #7f8c8d; margin-bottom: 10px; font-weight: 500; }
+        
+        /* 🔥 Нове ідеальне вирівнювання цін */
         .price-total { 
+            display: flex; 
+            justify-content: center; 
+            align-items: baseline; /* Вирівнюємо по нижньому краю тексту */
+            gap: 12px; /* Красивий відступ між старою і новою ціною */
+            margin: 0; 
+        }
+        .old-price {
+            text-decoration: line-through; 
+            color: #aab7b8; 
+            font-size: 18px; 
+            font-weight: 600;
+        }
+        .new-price {
             font-size: 26px; 
             color: #2c3e50; 
-            font-weight: 800; 
-            margin: 0;
-            display: flex;           /* Вмикаємо Flexbox */
-            justify-content: center; /* Центруємо по горизонталі */
-            align-items: center;     /* Центруємо по вертикалі */
+            font-weight: 800;
         }
         
         /* Стилі календаря */
         .flatpickr-day { border-radius: 50%; }
         .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background-color: #8f9779 !important; border-color: #8f9779 !important; color: white !important; }
         
-        /* 🔥 Прибираємо синю смугу між сусідніми датами (для 1 ночі) */
         .flatpickr-day.selected.startRange + .endRange, .flatpickr-day.startRange.startRange + .endRange, .flatpickr-day.endRange.startRange + .endRange {
             box-shadow: none !important;
         }
 
         .flatpickr-day.inRange {
-            background-color: #e8eae6 !important; /* Плоский світло-сірий колір */
+            background-color: #e8eae6 !important; 
             border-color: #e8eae6 !important;
-            border-radius: 0 !important; /* Прибираємо кружечки між датами */
-            box-shadow: -5px 0 0 #e8eae6, 5px 0 0 #e8eae6 !important; /* З'єднуємо проміжки між днями */
+            border-radius: 0 !important; 
+            box-shadow: -5px 0 0 #e8eae6, 5px 0 0 #e8eae6 !important; 
         }
         .flatpickr-day.flatpickr-disabled { color: #ff9999 !important; text-decoration: line-through; }
     </style>
@@ -78,7 +87,9 @@
         <div id="loading-state" style="color: #8f9779; font-weight: bold; display: none;">⏳ Рахуємо дублони...</div>
         <div id="final-price-state" style="display: none;">
             <div class="price-nights" id="nights-display">🌙 За 0 ночей</div>
-            <div class="price-total" id="total-display">💰 0 грн</div>
+            <div class="price-total" id="total-display">
+                <span class="new-price">💰 0 грн</span>
+            </div>
         </div>
     </div>
 
@@ -157,15 +168,19 @@
                     
                     if(data.error) {
                         document.getElementById('nights-display').innerText = "❌ Шторм!";
-                        document.getElementById('total-display').innerText = "Дати недоступні";
+                        document.getElementById('total-display').innerHTML = `<span class="new-price" style="font-size:20px;">Дати недоступні</span>`;
                     } else {
                         document.getElementById('nights-display').innerText = `🌙 За ${getNightsText(calcNights)}`;
                         
                         if (data.discount > 0) {
-                             // Використовуємо margin-right для відступу між цінами
-                             document.getElementById('total-display').innerHTML = `🎁 <span style="text-decoration: line-through; color: #aab7b8; font-size: 18px; margin-right: 10px;">${data.basePrice}</span>💰 ${data.totalPrice} грн`;
+                             document.getElementById('total-display').innerHTML = `
+                                <span class="old-price">🎁 ${data.basePrice}</span>
+                                <span class="new-price">💰 ${data.totalPrice} грн</span>
+                             `;
                         } else {
-                             document.getElementById('total-display').innerText = `💰 ${data.totalPrice} грн`;
+                             document.getElementById('total-display').innerHTML = `
+                                <span class="new-price">💰 ${data.totalPrice} грн</span>
+                             `;
                         }
                     }
                     document.getElementById('final-price-state').style.display = 'block';
