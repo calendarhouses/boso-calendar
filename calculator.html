@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор - BOSO</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; text-align: center; background-color: #f9f6f0; }
+        .bosman-avatar { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #8f9779; margin-bottom: 10px; object-fit: cover; }
+        h2 { color: #2c3e50; font-size: 22px; margin-top: 5px; margin-bottom: 5px; font-weight: 700; }
+        p.subtitle { color: #7f8c8d; font-size: 14px; margin-top: 0; margin-bottom: 20px; }
+        
+        /* Випадаючий список */
+        .select-css {
+            display: block; font-size: 16px; font-weight: 500; color: #2c3e50; padding: 14px 20px;
+            width: 100%; max-width: 320px; margin: 0 auto 20px auto; border: 1px solid #dcdacb;
+            border-radius: 12px; background-color: #fcfbf8; appearance: none; outline: none; cursor: pointer;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238f9779%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat; background-position: right 1em top 50%; background-size: .65em auto;
+        }
+
+        #calendar-container { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: inline-block; margin-bottom: 20px; }
+        #loader { color: #8f9779; font-weight: bold; margin-bottom: 15px; }
+        
+        /* Блок ціни */
+        #price-result { display: none; background: #fff; border: 2px solid #8f9779; border-radius: 12px; padding: 20px; margin: 0 auto 20px auto; max-width: 300px; box-shadow: 0 6px 15px rgba(143, 151, 121, 0.15); }
+        .price-nights { font-size: 14px; color: #7f8c8d; margin-bottom: 5px; }
+        .price-total { font-size: 26px; color: #2c3e50; font-weight: 800; margin: 0; }
+        
+        button { background-color: #8f9779; color: white; border: none; padding: 16px; width: 100%; max-width: 320px; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; display: none; margin: 0 auto; }
+        
+        /* Стилі календаря (клікабельні кружечки) */
+        .flatpickr-day { border-radius: 50% !important; }
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background-color: #8f9779 !important; border-color: #8f9779 !important; }
+        .flatpickr-day.flatpickr-disabled { color: #ff9999 !important; text-decoration: line-through; } /* Зайняті дати червонясті і перекреслені */
+    </style>
+</head>
+<body>
+
+    <img src="bosman.jpg" alt="BOSO" class="bosman-avatar" onerror="this.src='https://via.placeholder.com/100?text=BOSO'">
+    <h2>Прицінитися до відпочинку ⚓</h2>
+    <p class="subtitle">Оберіть котедж та вільні дати</p>
+
+    <select id="cottageSelect" class="select-css" onchange="loadAvailability()">
+        <option value="65e8865b5cc7538d464e3f77">JUNIOR 1 (котедж для двох)</option>
+        <option value="65e8834e5cc7538d464e3b46">FAMILY №2 (сімейний котедж)</option>
+        <option value="65e8863a5cc7538d464e3eab">FAMILY №3 (сімейний котедж)</option>
+        <option value="65e886505cc7538d464e3f1d">FAMILY №4 (сімейний котедж)</option>
+    </select>
+
+    <div id="loader">⏳ Звіряємо бортові журнали...</div>
+
+    <div id="calendar-container" style="display: none;">
+        <input type="text" id="inlineCalendar" style="display:none;">
+    </div>
+
+    <div id="price-result">
+        <div id="loading-state" style="color: #8f9779; font-weight: bold; display: none;">⏳ Рахуємо дублони...</div>
+        <div id="final-price-state" style="display: none;">
+            <div class="price-nights" id="nights-display">За 0 ночей</div>
+            <div class="price-total" id="total-display">0 грн</div>
+        </div>
+    </div>
+
+    <button id="bookBtn" onclick="returnToBot()">Перейти до бронювання</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/uk.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        if (tg) { tg.expand(); tg.ready(); }
+
+        // 1. Старий скрипт для блокування зайнятих дат
+        const availabilityScriptUrl = "https://script.google.com/macros/s/AKfycbzsTNRpYZ38kHrurbQ9q289W7PJdrPDr614Zjc07FiyMy663CJowAl_Rtnsftwb_jQQ/exec";
+        
+        // 2. Новий скрипт для розрахунку ціни (Твоє посилання)
+        const calculatorScriptUrl = "https://script.google.com/macros/s/AKfycbwAkdrldfBpzv0zZLDyDqSNT9Ij30oiWz0Qb0BNwZGbK4Wtuj219VOu6tl3KWzAVB0m/exec";
+
+        let fpInstance = null;
+        let selectedCheckIn = "";
+        let selectedCheckOut = "";
+
+        function loadAvailability() {
+            const selectedRoomId = document.getElementById('cottageSelect').value;
+            
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('calendar-container').style.display = 'none';
+            document.getElementById('price-result').style.display = 'none';
+            document.getElementById('bookBtn').style.display = 'none';
+
+            fetch(`${availabilityScriptUrl}?roomId=${selectedRoomId}`)
+                .then(response => response.json())
+                .then(disabledDatesArray => {
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('calendar-container').style.display = 'inline-block';
+
+                    if (fpInstance) fpInstance.destroy();
+
+                    fpInstance = flatpickr("#inlineCalendar", {
+                        inline: true,
+                        mode: "range",
+                        minDate: "today",
+                        locale: "uk",
+                        showMonths: 1,
+                        disable: disabledDatesArray,
+                        onChange: function(selectedDates, dateStr, instance) {
+                            if (selectedDates.length === 2) {
+                                selectedCheckIn = instance.formatDate(selectedDates[0], "Y-m-d");
+                                selectedCheckOut = instance.formatDate(selectedDates[1], "Y-m-d");
+                                getPrice(selectedRoomId, selectedCheckIn, selectedCheckOut);
+                            } else {
+                                document.getElementById('price-result').style.display = 'none';
+                                document.getElementById('bookBtn').style.display = 'none';
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    document.getElementById('loader').innerText = "❌ Шторм на лінії зв'язку. Спробуйте пізніше.";
+                });
+        }
+
+        function getPrice(roomId, checkIn, checkOut) {
+            document.getElementById('price-result').style.display = 'block';
+            document.getElementById('loading-state').style.display = 'block';
+            document.getElementById('final-price-state').style.display = 'none';
+            document.getElementById('bookBtn').style.display = 'none';
+
+            fetch(`${calculatorScriptUrl}?roomId=${roomId}&checkIn=${checkIn}&checkOut=${checkOut}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loading-state').style.display = 'none';
+                    
+                    if(data.error) {
+                        document.getElementById('nights-display').innerText = "❌ Шторм!";
+                        document.getElementById('total-display').innerText = "Дати недоступні";
+                    } else {
+                        document.getElementById('nights-display').innerText = `За ${data.nights} ночі(ей)`;
+                        
+                        // Якщо є знижка - показуємо стару ціну перекресленою!
+                        if (data.discount > 0) {
+                             document.getElementById('total-display').innerHTML = `<span style="text-decoration: line-through; color: #aab7b8; font-size: 18px;">${data.basePrice}</span> ${data.totalPrice} грн`;
+                        } else {
+                             document.getElementById('total-display').innerText = `${data.totalPrice} грн`;
+                        }
+                        
+                        document.getElementById('bookBtn').style.display = 'block';
+                    }
+                    document.getElementById('final-price-state').style.display = 'block';
+                })
+                .catch(error => {
+                    document.getElementById('loading-state').innerText = "❌ Помилка зв'язку";
+                });
+        }
+
+        function returnToBot() {
+            if (tg) tg.close();
+        }
+
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomIdFromUrl = urlParams.get('room_id');
+            const selectElem = document.getElementById('cottageSelect');
+            
+            if (roomIdFromUrl) {
+                for(let i=0; i < selectElem.options.length; i++) {
+                    if(selectElem.options[i].value === roomIdFromUrl) {
+                        selectElem.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            loadAvailability();
+        };
+    </script>
+</body>
+</html>
