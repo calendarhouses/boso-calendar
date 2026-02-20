@@ -71,7 +71,10 @@
         }
 
         function showStep(stepNumber) {
-            document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.step-container').forEach(el => {
+                el.style.display = ''; // Ось це повертає видимість блокам!
+                el.classList.remove('active');
+            });
             setTimeout(() => { document.getElementById('step-' + stepNumber).classList.add('active'); }, 50);
         }
 
@@ -113,27 +116,25 @@
             const googleUrl = "https://script.google.com/macros/s/AKfycbwQNcWFZPXQHNY4VRUUujMIqJsHXA5O-vNmvKICxwQfiJfQH71AZlHQUU74OSFfwEOxrw/exec";
             const finalUrl = `${googleUrl}?userId=${userId}&checkIn=${finalCheckIn}&checkOut=${finalCheckOut}&guests=${finalGuests}&pets=${finalPets}&chan=${chanAnswer}&roomId=${roomId}`;
 
-            // Слухаємо відповідь від Google Script
             fetch(finalUrl)
                 .then(response => response.text())
                 .then(data => {
                     if (data.includes("Зайнято")) {
-                        // Червоний текст і повернення на 1 крок
                         msgDiv.style.color = "#e74c3c"; 
-                        msgDiv.innerText = "⚠️ На жаль, ці дати вже зайняті! Оберіть інші.";
+                        msgDiv.innerText = "⚠️ На жаль, ці дати вже зайняті екіпажем! Оберіть інші.";
                         setTimeout(() => { 
+                            msgDiv.style.display = 'none';
+                            fp.clear(); // Скидаємо старі дати!
                             goBack(1); 
-                            msgDiv.style.display = 'none'; 
                         }, 3500);
                     } else if (data.includes("Error")) {
                         msgDiv.style.color = "#e74c3c";
                         msgDiv.innerText = "❌ Шторм на лінії! Повертаємо в чат.";
                         setTimeout(() => { if (tg) tg.close(); }, 2500);
                     } else {
-                        // Зелений текст і закриття
                         msgDiv.style.color = "#4CAF50"; 
-                        msgDiv.innerText = "✅ Дати вільні! Формуємо рахунок у чаті...";
-                        setTimeout(() => { if (tg) tg.close(); }, 2000);
+                        msgDiv.innerText = "✅ Дати тимчасово заброньовано! Повертайтеся в чат для оплати.";
+                        setTimeout(() => { if (tg) tg.close(); }, 2500);
                     }
                 })
                 .catch(e => {
