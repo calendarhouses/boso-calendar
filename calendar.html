@@ -47,11 +47,17 @@
         #calendar-container { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: inline-block; margin-bottom: 20px; }
         #loader { color: #8f9779; font-weight: bold; margin-bottom: 15px; }
         
-        /* --- ОНОВЛЕНІ СТИЛІ ДЛЯ ДАТ (КРУЖЕЧКИ З ВІДСТУПАМИ) --- */
+        /* --- СТИЛІ ДЛЯ ДАТ --- */
         .flatpickr-day { 
             pointer-events: none !important; 
-            border-radius: 50% !important; /* Робимо ідеальні круги */
+            border-radius: 50% !important; 
         } 
+
+        /* ⚠️ ХОВАЄМО ДНІ ІНШИХ МІСЯЦІВ */
+        .flatpickr-day.prevMonthDay, 
+        .flatpickr-day.nextMonthDay { 
+            visibility: hidden !important; 
+        }
 
         /* Червоні дати */
         .flatpickr-day.booked-date { 
@@ -59,7 +65,7 @@
             color: white !important; 
             border: none !important; 
             opacity: 0.8;
-            transform: scale(0.85) !important; /* Зменшуємо розмір кружка, щоб не налазили */
+            transform: scale(0.85) !important; 
         }
 
         /* Зелені дати */
@@ -67,7 +73,7 @@
             background-color: #2ecc71 !important; 
             color: white !important; 
             border: none !important;
-            transform: scale(0.85) !important; /* Зменшуємо розмір кружка */
+            transform: scale(0.85) !important; 
         }
 
         .flatpickr-day.flatpickr-disabled { background-color: transparent !important; color: #ccc !important; }
@@ -132,7 +138,10 @@
                             const today = new Date();
                             today.setHours(0,0,0,0);
 
-                            if (dayElem.dateObj >= today) {
+                            // Перевіряємо, чи день належить до поточного місяця, щоб не фарбувати зайве
+                            const isCurrentMonth = !dayElem.classList.contains("prevMonthDay") && !dayElem.classList.contains("nextMonthDay");
+
+                            if (dayElem.dateObj >= today && isCurrentMonth) {
                                 if (bookedDatesSet.has(dateStrFormatted)) {
                                     dayElem.classList.add("booked-date");
                                 } else {
