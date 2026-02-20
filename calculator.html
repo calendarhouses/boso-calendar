@@ -26,11 +26,26 @@
         /* Блок ціни */
         #price-result { display: none; background: #fff; border: 2px solid #8f9779; border-radius: 12px; padding: 20px; margin: 0 auto 20px auto; max-width: 300px; box-shadow: 0 6px 15px rgba(143, 151, 121, 0.15); }
         .price-nights { font-size: 15px; color: #7f8c8d; margin-bottom: 8px; font-weight: 500; }
-        .price-total { font-size: 26px; color: #2c3e50; font-weight: 800; margin: 0; }
+        /* Змінили для ідеального центрування */
+        .price-total { 
+            font-size: 26px; 
+            color: #2c3e50; 
+            font-weight: 800; 
+            margin: 0;
+            display: flex;           /* Вмикаємо Flexbox */
+            justify-content: center; /* Центруємо по горизонталі */
+            align-items: center;     /* Центруємо по вертикалі */
+        }
         
-        /* Стилі календаря (клікабельні кружечки та плоский діапазон) */
+        /* Стилі календаря */
         .flatpickr-day { border-radius: 50%; }
         .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background-color: #8f9779 !important; border-color: #8f9779 !important; color: white !important; }
+        
+        /* 🔥 Прибираємо синю смугу між сусідніми датами (для 1 ночі) */
+        .flatpickr-day.selected.startRange + .endRange, .flatpickr-day.startRange.startRange + .endRange, .flatpickr-day.endRange.startRange + .endRange {
+            box-shadow: none !important;
+        }
+
         .flatpickr-day.inRange {
             background-color: #e8eae6 !important; /* Плоский світло-сірий колір */
             border-color: #e8eae6 !important;
@@ -81,9 +96,8 @@
         let fpInstance = null;
         let selectedCheckIn = "";
         let selectedCheckOut = "";
-        let calcNights = 1; // Змінна для нашого точного розрахунку ночей
+        let calcNights = 1;
 
-        // Функція для граматики української мови
         function getNightsText(n) {
             if (n % 10 === 1 && n % 100 !== 11) return n + " ніч";
             if ([2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100)) return n + " ночі";
@@ -117,7 +131,6 @@
                                 selectedCheckIn = instance.formatDate(selectedDates[0], "Y-m-d");
                                 selectedCheckOut = instance.formatDate(selectedDates[1], "Y-m-d");
                                 
-                                // Рахуємо ночі залізно і безпомилково прямо в браузері
                                 calcNights = Math.round((selectedDates[1] - selectedDates[0]) / (1000 * 60 * 60 * 24));
                                 
                                 getPrice(selectedRoomId, selectedCheckIn, selectedCheckOut);
@@ -146,12 +159,11 @@
                         document.getElementById('nights-display').innerText = "❌ Шторм!";
                         document.getElementById('total-display').innerText = "Дати недоступні";
                     } else {
-                        // Використовуємо наш правильний розрахунок ночей + граматику
                         document.getElementById('nights-display').innerText = `🌙 За ${getNightsText(calcNights)}`;
                         
-                        // Додали красиві емодзі для ціни
                         if (data.discount > 0) {
-                             document.getElementById('total-display').innerHTML = `🎁 <span style="text-decoration: line-through; color: #aab7b8; font-size: 18px;">${data.basePrice}</span> &nbsp;💰 ${data.totalPrice} грн`;
+                             // Використовуємо margin-right для відступу між цінами
+                             document.getElementById('total-display').innerHTML = `🎁 <span style="text-decoration: line-through; color: #aab7b8; font-size: 18px; margin-right: 10px;">${data.basePrice}</span>💰 ${data.totalPrice} грн`;
                         } else {
                              document.getElementById('total-display').innerText = `💰 ${data.totalPrice} грн`;
                         }
