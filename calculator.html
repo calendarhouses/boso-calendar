@@ -25,20 +25,21 @@
         
         /* Блок ціни */
         #price-result { display: none; background: #fff; border: 2px solid #8f9779; border-radius: 12px; padding: 20px; margin: 0 auto 20px auto; max-width: 300px; box-shadow: 0 6px 15px rgba(143, 151, 121, 0.15); }
-        .price-nights { font-size: 15px; color: #7f8c8d; margin-bottom: 10px; font-weight: 500; }
+        .price-nights { font-size: 15px; color: #7f8c8d; margin-bottom: 12px; font-weight: 500; }
         
-        /* 🔥 Нове ідеальне вирівнювання цін */
+        /* 🔥 Тепер ціни в стовпчик і ідеально по центру */
         .price-total { 
             display: flex; 
+            flex-direction: column; /* Ставимо елементи один над одним */
             justify-content: center; 
-            align-items: baseline; /* Вирівнюємо по нижньому краю тексту */
-            gap: 12px; /* Красивий відступ між старою і новою ціною */
+            align-items: center; /* Центруємо по горизонталі */
+            gap: 4px; /* Невеликий відступ між цінами */
             margin: 0; 
         }
         .old-price {
             text-decoration: line-through; 
             color: #aab7b8; 
-            font-size: 18px; 
+            font-size: 16px; /* Зробили трохи меншою, щоб не забирала увагу */
             font-weight: 600;
         }
         .new-price {
@@ -172,6 +173,7 @@
                     } else {
                         document.getElementById('nights-display').innerText = `🌙 За ${getNightsText(calcNights)}`;
                         
+                        // Ось тут магія: стара ціна йде першим рядком, а нова - під нею
                         if (data.discount > 0) {
                              document.getElementById('total-display').innerHTML = `
                                 <span class="old-price">🎁 ${data.basePrice}</span>
