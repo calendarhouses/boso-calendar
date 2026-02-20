@@ -9,40 +9,45 @@
         body { font-family: 'Segoe UI', sans-serif; padding: 20px; text-align: center; background-color: #f9f6f0; }
         .bosman-avatar { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #8f9779; margin-bottom: 10px; object-fit: cover; }
         h2 { color: #2c3e50; font-size: 20px; margin-top: 5px; margin-bottom: 5px; }
-        p.subtitle { color: #7f8c8d; font-size: 14px; margin-top: 0; margin-bottom: 20px; }
+        p.subtitle { color: #7f8c8d; font-size: 14px; margin-top: 0; margin-bottom: 15px; }
         
+        /* Стилі для випадаючого списку */
+        .select-css {
+            display: block; font-size: 16px; font-family: sans-serif; font-weight: 700; color: #444; line-height: 1.3;
+            padding: .6em 1.4em .5em .8em; width: 100%; max-width: 300px; box-sizing: border-box; margin: 0 auto 20px auto;
+            border: 2px solid #8f9779; box-shadow: 0 1px 0 1px rgba(0,0,0,.04); border-radius: 8px;
+            -moz-appearance: none; -webkit-appearance: none; appearance: none; background-color: #fff;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238f9779%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat, repeat; background-position: right .7em top 50%, 0 0; background-size: .65em auto, 100%; outline: none;
+        }
+
         #calendar-container { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: inline-block; margin-bottom: 20px; }
         #loader { color: #8f9779; font-weight: bold; margin-bottom: 15px; }
         
-        button { background-color: #8f9779; color: white; border: none; padding: 15px; width: 100%; max-width: 320px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; margin: 0 auto; }
-        
-        /* МАГІЯ CSS ДЛЯ ТАБЛО */
-        /* 1. Відключаємо кліки по днях */
         .flatpickr-day { pointer-events: none !important; border-radius: 8px !important; } 
-        
-        /* 2. Стиль для зайнятих дат (ЧЕРВОНИЙ) */
         .flatpickr-day.booked-date { background-color: #e74c3c !important; color: white !important; border: none !important; opacity: 0.8; }
-        
-        /* 3. Стиль для вільних дат (ЗЕЛЕНИЙ) */
         .flatpickr-day.free-date { background-color: #2ecc71 !important; color: white !important; border: none !important; }
-        
-        /* Щоб минулі дні залишалися сірими, а не зеленими */
         .flatpickr-day.flatpickr-disabled { background-color: transparent !important; color: #ccc !important; }
     </style>
 </head>
 <body>
 
     <img src="bosman.jpg" alt="Капітан Босман" class="bosman-avatar" onerror="this.src='https://via.placeholder.com/100?text=BOSO'">
-    <h2>Доступність котеджу ⚓</h2>
+    <h2>Доступність котеджів ⚓</h2>
     <p class="subtitle">🔴 Зайнято | 🟢 Вільно</p>
 
-    <div id="loader">⏳ Капітан перевіряє бортові журнали...</div>
+    <select id="cottageSelect" class="select-css" onchange="loadCalendarDates()">
+        <option value="65e8865b5cc7538d464e3f77">JUNIOR 1 (котедж для двох)</option>
+        <option value="65e8834e5cc7538d464e3b46">FAMILY №2 (сімейний котедж)</option>
+        <option value="65e8863a5cc7538d464e3eab">FAMILY №3 (сімейний котедж)</option>
+        <option value="65e886505cc7538d464e3f1d">FAMILY №4 (сімейний котедж)</option>
+    </select>
+
+    <div id="loader">⏳ Звіряємо бортові журнали...</div>
 
     <div id="calendar-container" style="display: none;">
         <input type="text" id="inlineCalendar" style="display:none;">
     </div>
-
-    <button onclick="closeApp()">Повернутися в чат</button>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/uk.js"></script>
@@ -52,53 +57,69 @@
         const tg = window.Telegram.WebApp;
         if (tg) { tg.expand(); tg.ready(); }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const roomId = urlParams.get('room_id');
-        
-        // ⚠️ ПОСИЛАННЯ НА ТВОЮ НОВУ РОЗВІДКУ ДАТ У GOOGLE SCRIPT
+        // Твоє бойове посилання на розвідку дат
         const googleScriptUrl = "https://script.google.com/macros/s/AKfycbzsTNRpYZ38kHrurbQ9q289W7PJdrPDr614Zjc07FiyMy663CJowAl_Rtnsftwb_jQQ/exec";
 
-        fetch(`${googleScriptUrl}?roomId=${roomId}`)
-            .then(response => response.json())
-            .then(disabledDatesArray => {
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('calendar-container').style.display = 'inline-block';
+        let fpInstance = null; 
 
-                // Створюємо "Словник" зайнятих дат для швидкого пошуку
-                const bookedDatesSet = new Set(disabledDatesArray);
+        function loadCalendarDates() {
+            const selectedRoomId = document.getElementById('cottageSelect').value;
+            
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('calendar-container').style.display = 'none';
 
-                flatpickr("#inlineCalendar", {
-                    inline: true,
-                    locale: "uk",
-                    minDate: "today",
-                    showMonths: 1, // Можеш змінити на 2, якщо хочеш показувати одразу два місяці
-                    onDayCreate: function(dObj, dStr, fp, dayElem) {
-                        // Отримуємо дату конкретного дня у форматі YYYY-MM-DD
-                        const dateStrFormatted = fp.formatDate(dayElem.dateObj, "Y-m-d");
-                        
-                        // Перевіряємо, щоб розфарбовувати тільки майбутні дати та сьогодні
-                        const today = new Date();
-                        today.setHours(0,0,0,0);
+            fetch(`${googleScriptUrl}?roomId=${selectedRoomId}`)
+                .then(response => response.json())
+                .then(disabledDatesArray => {
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('calendar-container').style.display = 'inline-block';
 
-                        if (dayElem.dateObj >= today) {
-                            if (bookedDatesSet.has(dateStrFormatted)) {
-                                // Якщо дата є в списку від Google Script -> робимо червоною
-                                dayElem.classList.add("booked-date");
-                            } else {
-                                // Якщо дати немає в списку -> робимо зеленою
-                                dayElem.classList.add("free-date");
+                    const bookedDatesSet = new Set(disabledDatesArray);
+
+                    if (fpInstance) {
+                        fpInstance.destroy();
+                    }
+
+                    fpInstance = flatpickr("#inlineCalendar", {
+                        inline: true,
+                        locale: "uk",
+                        minDate: "today",
+                        showMonths: 1,
+                        onDayCreate: function(dObj, dStr, fp, dayElem) {
+                            const dateStrFormatted = fp.formatDate(dayElem.dateObj, "Y-m-d");
+                            const today = new Date();
+                            today.setHours(0,0,0,0);
+
+                            if (dayElem.dateObj >= today) {
+                                if (bookedDatesSet.has(dateStrFormatted)) {
+                                    dayElem.classList.add("booked-date");
+                                } else {
+                                    dayElem.classList.add("free-date");
+                                }
                             }
                         }
-                    }
+                    });
+                })
+                .catch(error => {
+                    document.getElementById('loader').innerText = "❌ Шторм на лінії зв'язку. Спробуйте пізніше.";
                 });
-            })
-            .catch(error => {
-                document.getElementById('loader').innerText = "❌ Шторм на лінії зв'язку. Спробуйте пізніше.";
-            });
-
-        function closeApp() {
-            if (tg) tg.close();
         }
+
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomIdFromUrl = urlParams.get('room_id');
+            const selectElem = document.getElementById('cottageSelect');
+            
+            if (roomIdFromUrl) {
+                for(let i=0; i < selectElem.options.length; i++) {
+                    if(selectElem.options[i].value === roomIdFromUrl) {
+                        selectElem.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            loadCalendarDates();
+        };
     </script>
 </body>
 </html>
