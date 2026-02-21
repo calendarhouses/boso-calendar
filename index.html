@@ -15,6 +15,12 @@
         input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; text-align: center; font-size: 16px; outline: none; box-sizing: border-box; margin-bottom: 15px; }
         button { background-color: #8f9779; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; margin-bottom: 10px; }
         .btn-outline { background-color: white; color: #8f9779; border: 2px solid #8f9779; }
+        
+        /* Стилі для сітки кнопок гостей */
+        .guest-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .guest-btn { background-color: white; color: #8f9779; border: 2px solid #8f9779; padding: 15px 5px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-bottom: 0; }
+        .guest-btn:hover { background-color: #8f9779; color: white; }
+        
         #message { margin-top: 15px; font-weight: bold; font-size: 16px; display: none; }
     </style>
 </head>
@@ -30,8 +36,7 @@
     </div>
 
     <div id="step-2" class="step-container">
-        <input type="number" id="guestsInput" placeholder="Наприклад: 2" min="1" max="10">
-        <button onclick="goToStep3()">Далі</button>
+        <div id="guest-buttons" class="guest-grid"></div>
         <button class="btn-outline" onclick="goBack(1)" style="padding: 10px; font-size: 14px; margin-top: 5px;">Назад</button>
     </div>
 
@@ -86,13 +91,34 @@
             if (fp.selectedDates.length < 2) { alert("⚓ Оберіть заїзд та виїзд!"); return; }
             finalCheckIn = fp.formatDate(fp.selectedDates[0], "Y-m-d");
             finalCheckOut = fp.formatDate(fp.selectedDates[1], "Y-m-d");
-            updateHeader("Скільки вас буде?", "Вкажіть кількість осіб"); showStep(2);
+            
+            // Динамічні кнопки для гостей
+            const juniorId = "65e8865b5cc7538d464e3f77";
+            const maxGuests = (roomId === juniorId) ? 2 : 6;
+            
+            const guestDiv = document.getElementById("guest-buttons");
+            guestDiv.innerHTML = ""; // Очищаємо перед генерацією
+            
+            // Якщо Junior (2 кнопки), робимо їх ширшими. Якщо Family (6) - сіткою.
+            guestDiv.style.gridTemplateColumns = (maxGuests === 2) ? "repeat(2, 1fr)" : "repeat(3, 1fr)";
+
+            for(let i = 1; i <= maxGuests; i++) {
+                let btn = document.createElement("button");
+                btn.className = "guest-btn";
+                btn.innerText = i + " 👤";
+                btn.onclick = function() {
+                    finalGuests = i;
+                    goToStep3(); // Автоматичний перехід без кнопки "Далі"
+                };
+                guestDiv.appendChild(btn);
+            }
+
+            updateHeader("Скільки вас буде?", "Оберіть кількість осіб"); 
+            showStep(2);
         }
 
         function goToStep3() {
-            const guests = document.getElementById('guestsInput').value;
-            if (!guests || guests < 1) { alert("Вкажіть кількість гостей!"); return; }
-            finalGuests = guests;
+            if (!finalGuests) { alert("Оберіть кількість гостей!"); return; }
             updateHeader("Ви з пухнастиком?", "Ми дружні до тварин"); showStep(3);
         }
 
@@ -103,7 +129,7 @@
 
         function goBack(stepNumber) {
             if(stepNumber === 1) updateHeader("Оберіть дати відпочинку ⚓", "Коли плануєте заїзд та виїзд?");
-            if(stepNumber === 2) updateHeader("Скільки вас буде?", "Вкажіть кількість осіб");
+            if(stepNumber === 2) updateHeader("Скільки вас буде?", "Оберіть кількість осіб");
             if(stepNumber === 3) updateHeader("Ви з пухнастиком?", "Ми дружні до тварин");
             showStep(stepNumber);
         }
@@ -119,8 +145,6 @@
             const msgDiv = document.getElementById('message');
             msgDiv.style.display = 'block';
             msgDiv.style.color = "#8f9779";
-            
-            // ОЧИЩАЄМО ТЕКСТ ВІД СТАРИХ ПОМИЛОК
             msgDiv.innerText = "⚓ Зачекайте, Капітан звіряє карти..."; 
             
             updateHeader("Майже готово!", "Звіряємо карти...");
