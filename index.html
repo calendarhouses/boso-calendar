@@ -67,7 +67,7 @@
         
         // ⚓️ НОВЕ: Зчитуємо ім'я та телефон з посилання SmartSender
         const guestName = urlParams.get('guest_name') || tg.initDataUnsafe?.user?.first_name || "Гість";
-        const guestPhone = urlParams.get('guest_phone') || "Не вказано";
+        const guestPhone = urlParams.get('guest_phone')?.replace(' ', '+') || "Не вказано";
 
         let finalCheckIn = "", finalCheckOut = "", finalGuests = "", finalPets = "";
 
