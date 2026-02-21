@@ -16,7 +16,6 @@
         button { background-color: #8f9779; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; margin-bottom: 10px; }
         .btn-outline { background-color: white; color: #8f9779; border: 2px solid #8f9779; }
         
-        /* Стилі для сітки кнопок гостей */
         .guest-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
         .guest-btn { background-color: white; color: #8f9779; border: 2px solid #8f9779; padding: 15px 5px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-bottom: 0; }
         .guest-btn:hover { background-color: #8f9779; color: white; }
@@ -65,6 +64,10 @@
         const urlParams = new URLSearchParams(window.location.search);
         const userId = tg.initDataUnsafe?.user?.id || urlParams.get('user_id');
         const roomId = urlParams.get('room_id');
+        
+        // ⚓️ НОВЕ: Зчитуємо ім'я та телефон з посилання SmartSender
+        const guestName = urlParams.get('guest_name') || tg.initDataUnsafe?.user?.first_name || "Гість";
+        const guestPhone = urlParams.get('guest_phone') || "Не вказано";
 
         let finalCheckIn = "", finalCheckOut = "", finalGuests = "", finalPets = "";
 
@@ -92,14 +95,12 @@
             finalCheckIn = fp.formatDate(fp.selectedDates[0], "Y-m-d");
             finalCheckOut = fp.formatDate(fp.selectedDates[1], "Y-m-d");
             
-            // Динамічні кнопки для гостей
             const juniorId = "65e8865b5cc7538d464e3f77";
             const maxGuests = (roomId === juniorId) ? 2 : 6;
             
             const guestDiv = document.getElementById("guest-buttons");
-            guestDiv.innerHTML = ""; // Очищаємо перед генерацією
+            guestDiv.innerHTML = ""; 
             
-            // Якщо Junior (2 кнопки), робимо їх ширшими. Якщо Family (6) - сіткою.
             guestDiv.style.gridTemplateColumns = (maxGuests === 2) ? "repeat(2, 1fr)" : "repeat(3, 1fr)";
 
             for(let i = 1; i <= maxGuests; i++) {
@@ -108,7 +109,7 @@
                 btn.innerText = i + " 👤";
                 btn.onclick = function() {
                     finalGuests = i;
-                    goToStep3(); // Автоматичний перехід без кнопки "Далі"
+                    goToStep3(); 
                 };
                 guestDiv.appendChild(btn);
             }
@@ -150,7 +151,8 @@
             updateHeader("Майже готово!", "Звіряємо карти...");
 
             const googleUrl = "https://script.google.com/macros/s/AKfycbwQNcWFZPXQHNY4VRUUujMIqJsHXA5O-vNmvKICxwQfiJfQH71AZlHQUU74OSFfwEOxrw/exec";
-            const finalUrl = `${googleUrl}?userId=${userId}&checkIn=${finalCheckIn}&checkOut=${finalCheckOut}&guests=${finalGuests}&pets=${finalPets}&chan=${chanAnswer}&roomId=${roomId}`;
+            // ⚓️ НОВЕ: Додаємо guestName та guestPhone у посилання для Google Скрипта
+            const finalUrl = `${googleUrl}?userId=${userId}&checkIn=${finalCheckIn}&checkOut=${finalCheckOut}&guests=${finalGuests}&pets=${finalPets}&chan=${chanAnswer}&roomId=${roomId}&guestName=${encodeURIComponent(guestName)}&guestPhone=${encodeURIComponent(guestPhone)}`;
 
             fetch(finalUrl)
                 .then(response => response.text())
