@@ -19,12 +19,10 @@
         .guest-btn:hover { background-color: #8f9779; color: white; }
         #message { margin-top: 15px; font-weight: bold; font-size: 16px; display: none; }
         
-        /* --- ПРЕМІУМ ДИЗАЙН ВИПАДАЮЧОГО СПИСКУ --- */
         .select-css {
             display: block; font-size: 16px; font-family: inherit; font-weight: 500; color: #2c3e50; line-height: 1.4; padding: 14px 20px; width: 100%; box-sizing: border-box; margin: 0 auto 15px auto;
             border: 2px solid #e0e0e0; border-radius: 12px; background-color: white;
-            -moz-appearance: none; -webkit-appearance: none; appearance: none; /* Прибираємо старий стиль */
-            /* Додаємо кастомну стрілочку */
+            -moz-appearance: none; -webkit-appearance: none; appearance: none; 
             background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238f9779%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
             background-repeat: no-repeat, repeat; background-position: right 1em top 50%, 0 0; background-size: .8em auto, 100%;
             outline: none; cursor: pointer; transition: all 0.3s ease;
@@ -33,30 +31,31 @@
         
         #loader { color: #8f9779; font-weight: bold; margin-bottom: 15px; }
         
-        /* --- СТИЛІ КАЛЕНДАРЯ (Виправлено) --- */
+        /* --- СТИЛІ КАЛЕНДАРЯ (ІДЕАЛЬНІ КРУЖЕЧКИ) --- */
         
         /* 1. Ховаємо дати інших місяців */
         .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay {
             visibility: hidden !important; pointer-events: none !important;
         }
 
-        /* 2. Зайняті дати - Червоні */
+        /* 2. Зайняті дати - Червоні кружечки */
         .flatpickr-day.booked-date {
             background-color: #e74c3c !important; color: white !important; opacity: 0.8 !important; transform: scale(0.9); border-radius: 50% !important; border: none !important;
         }
 
-        /* 3. Вільні дати - Зелені */
+        /* 3. Вільні дати - Зелені кружечки */
         .flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay):not(.selected):not(.startRange):not(.endRange):not(.inRange) {
             background-color: #2ecc71 !important; color: white !important; border: none !important; transform: scale(0.9); border-radius: 50% !important;
         }
 
-        /* 4. Виділений діапазон - Наш фірмовий Хакі замість синього */
+        /* 4. Виділений діапазон */
+        /* Старт і кінець діапазону - Темний Хакі */
         .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
-            background-color: #8f9779 !important; color: white !important; border: none !important; border-radius: 50% !important;
+            background-color: #8f9779 !important; color: white !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important;
         }
+        /* Дні всередині діапазону - Світлий Хакі (Без квадратних тіней!) */
         .flatpickr-day.inRange {
-            background-color: #dce0d1 !important; /* Світліший хакі для проміжку */
-            box-shadow: -5px 0 0 #dce0d1, 5px 0 0 #dce0d1 !important; border: none !important;
+            background-color: #dce0d1 !important; color: #2c3e50 !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important;
         }
     </style>
 </head>
@@ -160,7 +159,6 @@
                         disable: disabledDatesArray,
                         onDayCreate: function(dObj, dStr, fp, dayElem) {
                             const dateStrFormatted = fp.formatDate(dayElem.dateObj, "Y-m-d");
-                            // Фарбуємо в червоний тільки ті дати, які реально зайняті
                             if (bookedDatesSet.has(dateStrFormatted)) {
                                 dayElem.classList.add("booked-date");
                             }
