@@ -19,23 +19,32 @@
         .guest-btn:hover { background-color: #8f9779; color: white; }
         #message { margin-top: 15px; font-weight: bold; font-size: 16px; display: none; }
         
-        /* Стиль вибору котеджу */
         .select-css { display: block; font-size: 16px; font-family: inherit; font-weight: 500; color: #2c3e50; line-height: 1.4; padding: 12px 15px; width: 100%; box-sizing: border-box; margin: 0 auto 15px auto; border: 2px solid #e0e0e0; border-radius: 8px; background-color: white; outline: none; cursor: pointer; }
-        
         #loader { color: #8f9779; font-weight: bold; margin-bottom: 15px; }
         
         /* --- СТИЛІ КАЛЕНДАРЯ --- */
-        /* Зелені вільні дати */
+        
+        /* 1. Минулі дати (стандартний disabled) - Сірі та прозорі */
+        .flatpickr-day.flatpickr-disabled:not(.booked-date) {
+            background-color: transparent !important; color: #ccc !important;
+        }
+
+        /* 2. Зайняті дати (наша кастомна перевірка) - Червоні */
+        .flatpickr-day.booked-date {
+            background-color: #e74c3c !important; color: white !important; opacity: 0.8 !important; transform: scale(0.9); border-radius: 50% !important; border: none !important;
+        }
+
+        /* 3. Вільні дати (не disabled, не зайняті) - Зелені */
         .flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay):not(.selected):not(.startRange):not(.endRange):not(.inRange) {
-            background-color: #2ecc71 !important; color: white !important; border: none !important; transform: scale(0.9); border-radius: 50%;
+            background-color: #2ecc71 !important; color: white !important; border: none !important; transform: scale(0.9); border-radius: 50% !important;
         }
-        /* Червоні зайняті дати */
-        .flatpickr-day.flatpickr-disabled {
-            background-color: #e74c3c !important; color: white !important; opacity: 0.8 !important; transform: scale(0.9); border-radius: 50%;
+
+        /* 4. Виділений діапазон (в стилі BOSO - колір хакі) */
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
+            background-color: #8f9779 !important; color: white !important; border: none !important; border-radius: 50% !important;
         }
-        /* Колір обраного діапазону (Темно-синій) */
-        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.inRange {
-            background-color: #2c3e50 !important; color: white !important; border: none !important; box-shadow: none !important;
+        .flatpickr-day.inRange {
+            background-color: #dce0d1 !important; box-shadow: none !important; border: none !important;
         }
     </style>
 </head>
@@ -93,9 +102,7 @@
         const guestName = urlParams.get('guest_name') || tg.initDataUnsafe?.user?.first_name || "Гість";
         const guestPhone = urlParams.get('guest_phone')?.replace(' ', '+') || "Не вказано";
 
-        // URL скрипта, який віддає масив зайнятих дат (ТВІЙ ПЕРШИЙ СКРИПТ)
         const checkDatesUrl = "https://script.google.com/macros/s/AKfycbzsTNRpYZ38kHrurbQ9q289W7PJdrPDr614Zjc07FiyMy663CJowAl_Rtnsftwb_jQQ/exec";
-        // URL скрипта, який безпосередньо створює бронь (ТВІЙ ДРУГИЙ СКРИПТ)
         const bookUrl = "https://script.google.com/macros/s/AKfycbwQNcWFZPXQHNY4VRUUujMIqJsHXA5O-vNmvKICxwQfiJfQH71AZlHQUU74OSFfwEOxrw/exec";
 
         let fpInstance = null; 
@@ -115,7 +122,6 @@
             }, 10);
         }
 
-        // ЗАВАНТАЖЕННЯ КАЛЕНДАРЯ
         function loadCalendarDates() {
             finalRoomId = document.getElementById('cottageSelect').value;
             
@@ -129,6 +135,8 @@
                     document.getElementById('loader').style.display = 'none';
                     document.getElementById('calendar-wrapper').style.display = 'block';
 
+                    const bookedDatesSet = new Set(disabledDatesArray);
+
                     if (fpInstance) fpInstance.destroy();
 
                     fpInstance = flatpickr("#inlineCalendar", {
@@ -137,7 +145,14 @@
                         minDate: "today",
                         locale: "uk",
                         showMonths: 1,
-                        disable: disabledDatesArray, // Магія: Flatpickr сам блокує червоні дати!
+                        disable: disabledDatesArray,
+                        onDayCreate: function(dObj, dStr, fp, dayElem) {
+                            const dateStrFormatted = fp.formatDate(dayElem.dateObj, "Y-m-d");
+                            // Фарбуємо в червоний тільки ті дати, які реально зайняті, а не просто минулі
+                            if (bookedDatesSet.has(dateStrFormatted)) {
+                                dayElem.classList.add("booked-date");
+                            }
+                        },
                         onChange: function(selectedDates, dateStr, instance) {
                             if (selectedDates.length === 2) {
                                 finalCheckIn = instance.formatDate(selectedDates[0], "Y-m-d");
@@ -156,11 +171,11 @@
 
         function goToStep2() {
             const juniorId = "65e8865b5cc7538d464e3f77";
-            const maxGuests = (finalRoomId === juniorId) ? 2 : 6;
+            const maxGuests = (finalRoomId === juniorId) ? 4 : 6; // ⚓️ Виправлено ліміт для Junior
             
             const guestDiv = document.getElementById("guest-buttons");
             guestDiv.innerHTML = ""; 
-            guestDiv.style.gridTemplateColumns = (maxGuests === 2) ? "repeat(2, 1fr)" : "repeat(3, 1fr)";
+            guestDiv.style.gridTemplateColumns = (maxGuests === 4) ? "repeat(2, 1fr)" : "repeat(3, 1fr)";
 
             for(let i = 1; i <= maxGuests; i++) {
                 let btn = document.createElement("button");
@@ -173,15 +188,8 @@
             showStep(2);
         }
 
-        function goToStep3() {
-            updateHeader("Ви з пухнастиком?", "Ми дружні до тварин"); showStep(3);
-        }
-
-        function goToStep4(petAnswer) {
-            finalPets = petAnswer;
-            updateHeader("Бажаєте гарячий чан?", "Ідеально для вечірнього релаксу"); showStep(4);
-        }
-
+        function goToStep3() { updateHeader("Ви з пухнастиком?", "Ми дружні до тварин"); showStep(3); }
+        function goToStep4(petAnswer) { finalPets = petAnswer; updateHeader("Бажаєте гарячий чан?", "Ідеально для вечірнього релаксу"); showStep(4); }
         function goBack(stepNumber) {
             if(stepNumber === 1) updateHeader("Бронювання котеджу ⚓", "🔴 Зайнято | 🟢 Вільно");
             if(stepNumber === 2) updateHeader("Скільки вас буде?", "Оберіть кількість осіб");
@@ -195,8 +203,7 @@
             const msgDiv = document.getElementById('message');
             msgDiv.style.display = 'block';
             msgDiv.style.color = "#8f9779";
-            msgDiv.innerText = "⚓ Відправляємо запит до Bookmenow..."; 
-            
+            msgDiv.innerText = "⚓ Відправляємо запит..."; 
             updateHeader("Майже готово!", "Бронюємо ваші дати...");
 
             const finalUrl = `${bookUrl}?userId=${userId}&checkIn=${finalCheckIn}&checkOut=${finalCheckOut}&guests=${finalGuests}&pets=${finalPets}&chan=${chanAnswer}&roomId=${finalRoomId}&guestName=${encodeURIComponent(guestName)}&guestPhone=${encodeURIComponent(guestPhone)}`;
@@ -219,8 +226,7 @@
                     }
                 })
                 .catch(e => {
-                    msgDiv.style.color = "#4CAF50";
-                    msgDiv.innerText = "✅ Перевіряйте повідомлення в Telegram";
+                    msgDiv.style.color = "#4CAF50"; msgDiv.innerText = "✅ Перевіряйте повідомлення в Telegram";
                     setTimeout(() => { if (tg) tg.close(); }, 2500);
                 });
         }
@@ -229,15 +235,12 @@
             const urlParams = new URLSearchParams(window.location.search);
             const roomIdFromUrl = urlParams.get('room_id');
             const selectElem = document.getElementById('cottageSelect');
-            
             if (roomIdFromUrl) {
                 for(let i=0; i < selectElem.options.length; i++) {
-                    if(selectElem.options[i].value === roomIdFromUrl) {
-                        selectElem.selectedIndex = i; break;
-                    }
+                    if(selectElem.options[i].value === roomIdFromUrl) { selectElem.selectedIndex = i; break; }
                 }
             }
-            loadCalendarDates(); // Одразу малюємо календар для першого котеджу
+            loadCalendarDates(); 
         };
     </script>
 </body>
