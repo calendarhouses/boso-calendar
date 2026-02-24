@@ -3,35 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOSO Booking</title>
+    <title>BOSO Booking & Доступність</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         body { font-family: 'Segoe UI', sans-serif; padding: 20px; text-align: center; background-color: #f9f6f0; overflow-x: hidden; }
-        .bosman-avatar { width: 120px; height: 120px; border-radius: 50%; border: 4px solid #8f9779; margin-bottom: 10px; object-fit: cover; transition: 0.3s; }
+        .bosman-avatar { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #8f9779; margin-bottom: 10px; object-fit: cover; }
         .step-container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 320px; margin: 0 auto; display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
         .step-container.active { opacity: 1; transform: translateY(0); }
         h2 { color: #2c3e50; font-size: 20px; margin-top: 5px; margin-bottom: 5px; }
-        p.subtitle { color: #7f8c8d; font-size: 14px; margin-top: 0; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; text-align: center; font-size: 16px; outline: none; box-sizing: border-box; margin-bottom: 15px; }
-        button { background-color: #8f9779; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; margin-bottom: 10px; }
+        p.subtitle { color: #7f8c8d; font-size: 14px; margin-top: 0; margin-bottom: 15px; }
+        button { background-color: #8f9779; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; margin-bottom: 10px; margin-top: 15px; }
         .btn-outline { background-color: white; color: #8f9779; border: 2px solid #8f9779; }
-        
         .guest-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
         .guest-btn { background-color: white; color: #8f9779; border: 2px solid #8f9779; padding: 15px 5px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-bottom: 0; }
         .guest-btn:hover { background-color: #8f9779; color: white; }
-        
         #message { margin-top: 15px; font-weight: bold; font-size: 16px; display: none; }
+        
+        /* Стиль вибору котеджу */
+        .select-css { display: block; font-size: 16px; font-family: inherit; font-weight: 500; color: #2c3e50; line-height: 1.4; padding: 12px 15px; width: 100%; box-sizing: border-box; margin: 0 auto 15px auto; border: 2px solid #e0e0e0; border-radius: 8px; background-color: white; outline: none; cursor: pointer; }
+        
+        #loader { color: #8f9779; font-weight: bold; margin-bottom: 15px; }
+        
+        /* --- СТИЛІ КАЛЕНДАРЯ --- */
+        /* Зелені вільні дати */
+        .flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay):not(.selected):not(.startRange):not(.endRange):not(.inRange) {
+            background-color: #2ecc71 !important; color: white !important; border: none !important; transform: scale(0.9); border-radius: 50%;
+        }
+        /* Червоні зайняті дати */
+        .flatpickr-day.flatpickr-disabled {
+            background-color: #e74c3c !important; color: white !important; opacity: 0.8 !important; transform: scale(0.9); border-radius: 50%;
+        }
+        /* Колір обраного діапазону (Темно-синій) */
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.inRange {
+            background-color: #2c3e50 !important; color: white !important; border: none !important; box-shadow: none !important;
+        }
     </style>
 </head>
 <body>
 
-    <img id="main-img" src="bosman.jpg" alt="Капітан Босман" class="bosman-avatar" onerror="this.src='https://via.placeholder.com/120?text=BOSO'">
-    <h2 id="main-title">Оберіть дати відпочинку ⚓</h2>
-    <p id="main-subtitle" class="subtitle">Коли плануєте заїзд та виїзд?</p>
+    <img id="main-img" src="bosman.jpg" alt="Капітан Босман" class="bosman-avatar" onerror="this.src='https://via.placeholder.com/100?text=BOSO'">
+    <h2 id="main-title">Бронювання котеджу ⚓</h2>
+    <p id="main-subtitle" class="subtitle">🔴 Зайнято | 🟢 Вільно</p>
 
     <div id="step-1" class="step-container active" style="display: block;">
-        <input type="text" id="dateRange" placeholder="Натисніть для вибору..." readonly>
-        <button onclick="goToStep2()">Далі</button>
+        <select id="cottageSelect" class="select-css" onchange="loadCalendarDates()">
+            <option value="65e8865b5cc7538d464e3f77">JUNIOR 1 (котедж для двох)</option>
+            <option value="65e8834e5cc7538d464e3b46">FAMILY №2 (сімейний котедж)</option>
+            <option value="65e8863a5cc7538d464e3eab">FAMILY №3 (сімейний котедж)</option>
+            <option value="65e886505cc7538d464e3f1d">FAMILY №4 (сімейний котедж)</option>
+        </select>
+        
+        <div id="loader">⏳ Звіряємо бортові журнали...</div>
+        
+        <div id="calendar-wrapper" style="display: none;">
+            <input type="text" id="inlineCalendar" style="display:none;">
+            <button id="nextBtnStep1" style="display:none;" onclick="goToStep2()">Продовжити бронювання</button>
+        </div>
     </div>
 
     <div id="step-2" class="step-container">
@@ -51,7 +78,7 @@
         <button class="btn-outline" onclick="goBack(3)" style="border: none; margin-top: 10px;">Назад</button>
     </div>
 
-    <div id="message">⚓ Перевіряємо вільні дати...</div>
+    <div id="message">⚓ Перевіряємо та бронюємо...</div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/uk.js"></script>
@@ -63,15 +90,16 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const userId = tg.initDataUnsafe?.user?.id || urlParams.get('user_id');
-        const roomId = urlParams.get('room_id');
-        
-        // ⚓️ НОВЕ: Зчитуємо ім'я та телефон з посилання SmartSender
         const guestName = urlParams.get('guest_name') || tg.initDataUnsafe?.user?.first_name || "Гість";
         const guestPhone = urlParams.get('guest_phone')?.replace(' ', '+') || "Не вказано";
 
-        let finalCheckIn = "", finalCheckOut = "", finalGuests = "", finalPets = "";
+        // URL скрипта, який віддає масив зайнятих дат (ТВІЙ ПЕРШИЙ СКРИПТ)
+        const checkDatesUrl = "https://script.google.com/macros/s/AKfycbzsTNRpYZ38kHrurbQ9q289W7PJdrPDr614Zjc07FiyMy663CJowAl_Rtnsftwb_jQQ/exec";
+        // URL скрипта, який безпосередньо створює бронь (ТВІЙ ДРУГИЙ СКРИПТ)
+        const bookUrl = "https://script.google.com/macros/s/AKfycbwQNcWFZPXQHNY4VRUUujMIqJsHXA5O-vNmvKICxwQfiJfQH71AZlHQUU74OSFfwEOxrw/exec";
 
-        const fp = flatpickr("#dateRange", { mode: "range", minDate: "today", locale: "uk", dateFormat: "Y-m-d" });
+        let fpInstance = null; 
+        let finalCheckIn = "", finalCheckOut = "", finalGuests = "", finalPets = "", finalRoomId = "";
 
         function updateHeader(title, subtitle) {
             document.getElementById('main-title').innerText = title;
@@ -79,10 +107,7 @@
         }
 
         function showStep(stepNumber) {
-            document.querySelectorAll('.step-container').forEach(el => {
-                el.style.display = 'none'; 
-                el.classList.remove('active');
-            });
+            document.querySelectorAll('.step-container').forEach(el => { el.style.display = 'none'; el.classList.remove('active'); });
             setTimeout(() => { 
                 let current = document.getElementById('step-' + stepNumber);
                 current.style.display = 'block'; 
@@ -90,36 +115,65 @@
             }, 10);
         }
 
-        function goToStep2() {
-            if (fp.selectedDates.length < 2) { alert("⚓ Оберіть заїзд та виїзд!"); return; }
-            finalCheckIn = fp.formatDate(fp.selectedDates[0], "Y-m-d");
-            finalCheckOut = fp.formatDate(fp.selectedDates[1], "Y-m-d");
+        // ЗАВАНТАЖЕННЯ КАЛЕНДАРЯ
+        function loadCalendarDates() {
+            finalRoomId = document.getElementById('cottageSelect').value;
             
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('calendar-wrapper').style.display = 'none';
+            document.getElementById('nextBtnStep1').style.display = 'none';
+
+            fetch(`${checkDatesUrl}?roomId=${finalRoomId}`)
+                .then(response => response.json())
+                .then(disabledDatesArray => {
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('calendar-wrapper').style.display = 'block';
+
+                    if (fpInstance) fpInstance.destroy();
+
+                    fpInstance = flatpickr("#inlineCalendar", {
+                        inline: true,
+                        mode: "range",
+                        minDate: "today",
+                        locale: "uk",
+                        showMonths: 1,
+                        disable: disabledDatesArray, // Магія: Flatpickr сам блокує червоні дати!
+                        onChange: function(selectedDates, dateStr, instance) {
+                            if (selectedDates.length === 2) {
+                                finalCheckIn = instance.formatDate(selectedDates[0], "Y-m-d");
+                                finalCheckOut = instance.formatDate(selectedDates[1], "Y-m-d");
+                                document.getElementById('nextBtnStep1').style.display = 'block';
+                            } else {
+                                document.getElementById('nextBtnStep1').style.display = 'none';
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    document.getElementById('loader').innerText = "❌ Помилка зв'язку. Спробуйте пізніше.";
+                });
+        }
+
+        function goToStep2() {
             const juniorId = "65e8865b5cc7538d464e3f77";
-            const maxGuests = (roomId === juniorId) ? 2 : 6;
+            const maxGuests = (finalRoomId === juniorId) ? 2 : 6;
             
             const guestDiv = document.getElementById("guest-buttons");
             guestDiv.innerHTML = ""; 
-            
             guestDiv.style.gridTemplateColumns = (maxGuests === 2) ? "repeat(2, 1fr)" : "repeat(3, 1fr)";
 
             for(let i = 1; i <= maxGuests; i++) {
                 let btn = document.createElement("button");
                 btn.className = "guest-btn";
                 btn.innerText = i + " 👤";
-                btn.onclick = function() {
-                    finalGuests = i;
-                    goToStep3(); 
-                };
+                btn.onclick = function() { finalGuests = i; goToStep3(); };
                 guestDiv.appendChild(btn);
             }
-
             updateHeader("Скільки вас буде?", "Оберіть кількість осіб"); 
             showStep(2);
         }
 
         function goToStep3() {
-            if (!finalGuests) { alert("Оберіть кількість гостей!"); return; }
             updateHeader("Ви з пухнастиком?", "Ми дружні до тварин"); showStep(3);
         }
 
@@ -129,30 +183,23 @@
         }
 
         function goBack(stepNumber) {
-            if(stepNumber === 1) updateHeader("Оберіть дати відпочинку ⚓", "Коли плануєте заїзд та виїзд?");
+            if(stepNumber === 1) updateHeader("Бронювання котеджу ⚓", "🔴 Зайнято | 🟢 Вільно");
             if(stepNumber === 2) updateHeader("Скільки вас буде?", "Оберіть кількість осіб");
             if(stepNumber === 3) updateHeader("Ви з пухнастиком?", "Ми дружні до тварин");
             showStep(stepNumber);
         }
 
         function submitData(chanAnswer) {
-            if (!roomId) { alert("Капітан не бачить, який котедж ви обрали! Закрийте календар і натисніть кнопку ще раз."); return; }
-
-            document.querySelectorAll('.step-container').forEach(el => {
-                el.style.display = 'none';
-                el.classList.remove('active');
-            });
+            document.querySelectorAll('.step-container').forEach(el => { el.style.display = 'none'; el.classList.remove('active'); });
 
             const msgDiv = document.getElementById('message');
             msgDiv.style.display = 'block';
             msgDiv.style.color = "#8f9779";
-            msgDiv.innerText = "⚓ Зачекайте, Капітан звіряє карти..."; 
+            msgDiv.innerText = "⚓ Відправляємо запит до Bookmenow..."; 
             
-            updateHeader("Майже готово!", "Звіряємо карти...");
+            updateHeader("Майже готово!", "Бронюємо ваші дати...");
 
-            const googleUrl = "https://script.google.com/macros/s/AKfycbwQNcWFZPXQHNY4VRUUujMIqJsHXA5O-vNmvKICxwQfiJfQH71AZlHQUU74OSFfwEOxrw/exec";
-            // ⚓️ НОВЕ: Додаємо guestName та guestPhone у посилання для Google Скрипта
-            const finalUrl = `${googleUrl}?userId=${userId}&checkIn=${finalCheckIn}&checkOut=${finalCheckOut}&guests=${finalGuests}&pets=${finalPets}&chan=${chanAnswer}&roomId=${roomId}&guestName=${encodeURIComponent(guestName)}&guestPhone=${encodeURIComponent(guestPhone)}`;
+            const finalUrl = `${bookUrl}?userId=${userId}&checkIn=${finalCheckIn}&checkOut=${finalCheckOut}&guests=${finalGuests}&pets=${finalPets}&chan=${chanAnswer}&roomId=${finalRoomId}&guestName=${encodeURIComponent(guestName)}&guestPhone=${encodeURIComponent(guestPhone)}`;
 
             fetch(finalUrl)
                 .then(response => response.text())
@@ -160,18 +207,14 @@
                     if (data.includes("Зайнято")) {
                         msgDiv.style.color = "#e74c3c"; 
                         msgDiv.innerText = "⚠️ На жаль, ці дати вже зайняті екіпажем! Оберіть інші.";
-                        setTimeout(() => { 
-                            msgDiv.style.display = 'none';
-                            fp.clear(); 
-                            goBack(1); 
-                        }, 3500);
+                        setTimeout(() => { msgDiv.style.display = 'none'; fpInstance.clear(); goBack(1); }, 3500);
                     } else if (data.includes("Error")) {
                         msgDiv.style.color = "#e74c3c";
                         msgDiv.innerText = "❌ Шторм на лінії! Повертаємо в чат.";
                         setTimeout(() => { if (tg) tg.close(); }, 2500);
                     } else {
                         msgDiv.style.color = "#4CAF50"; 
-                        msgDiv.innerText = "✅ Дати тимчасово заброньовано! Повертайтеся в чат для оплати.";
+                        msgDiv.innerText = "✅ Дати успішно заброньовано! Повертайтеся в чат для оплати.";
                         setTimeout(() => { if (tg) tg.close(); }, 2500);
                     }
                 })
@@ -181,6 +224,21 @@
                     setTimeout(() => { if (tg) tg.close(); }, 2500);
                 });
         }
+
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomIdFromUrl = urlParams.get('room_id');
+            const selectElem = document.getElementById('cottageSelect');
+            
+            if (roomIdFromUrl) {
+                for(let i=0; i < selectElem.options.length; i++) {
+                    if(selectElem.options[i].value === roomIdFromUrl) {
+                        selectElem.selectedIndex = i; break;
+                    }
+                }
+            }
+            loadCalendarDates(); // Одразу малюємо календар для першого котеджу
+        };
     </script>
 </body>
 </html>
