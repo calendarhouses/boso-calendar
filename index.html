@@ -19,44 +19,20 @@
         .guest-btn:hover { background-color: #8f9779; color: white; }
         #message { margin-top: 15px; font-weight: bold; font-size: 16px; display: none; }
         
-        .select-css {
-            display: block; font-size: 16px; font-family: inherit; font-weight: 500; color: #2c3e50; line-height: 1.4; padding: 14px 20px; width: 100%; box-sizing: border-box; margin: 0 auto 15px auto;
-            border: 2px solid #e0e0e0; border-radius: 12px; background-color: white;
-            -moz-appearance: none; -webkit-appearance: none; appearance: none; 
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238f9779%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
-            background-repeat: no-repeat, repeat; background-position: right 1em top 50%, 0 0; background-size: .8em auto, 100%;
-            outline: none; cursor: pointer; transition: all 0.3s ease;
-        }
+        .select-css { display: block; font-size: 16px; font-family: inherit; font-weight: 500; color: #2c3e50; line-height: 1.4; padding: 14px 20px; width: 100%; box-sizing: border-box; margin: 0 auto 15px auto; border: 2px solid #e0e0e0; border-radius: 12px; background-color: white; -moz-appearance: none; -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238f9779%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat, repeat; background-position: right 1em top 50%, 0 0; background-size: .8em auto, 100%; outline: none; cursor: pointer; transition: all 0.3s ease; }
         .select-css:hover, .select-css:focus { border-color: #8f9779; }
-        
         #loader { color: #8f9779; font-weight: bold; margin-bottom: 15px; }
         
-        /* --- СТИЛІ КАЛЕНДАРЯ (ІДЕАЛЬНІ КРУЖЕЧКИ) --- */
-        
-        /* 1. Ховаємо дати інших місяців */
-        .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay {
-            visibility: hidden !important; pointer-events: none !important;
-        }
+        .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { visibility: hidden !important; pointer-events: none !important; }
+        .flatpickr-day.booked-date { background-color: #e74c3c !important; color: white !important; opacity: 0.8 !important; transform: scale(0.9); border-radius: 50% !important; border: none !important; }
+        .flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay):not(.selected):not(.startRange):not(.endRange):not(.inRange) { background-color: #2ecc71 !important; color: white !important; border: none !important; transform: scale(0.9); border-radius: 50% !important; }
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background-color: #8f9779 !important; color: white !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important; }
+        .flatpickr-day.inRange { background-color: #dce0d1 !important; color: #2c3e50 !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important; }
 
-        /* 2. Зайняті дати - Червоні кружечки */
-        .flatpickr-day.booked-date {
-            background-color: #e74c3c !important; color: white !important; opacity: 0.8 !important; transform: scale(0.9); border-radius: 50% !important; border: none !important;
-        }
-
-        /* 3. Вільні дати - Зелені кружечки */
-        .flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay):not(.selected):not(.startRange):not(.endRange):not(.inRange) {
-            background-color: #2ecc71 !important; color: white !important; border: none !important; transform: scale(0.9); border-radius: 50% !important;
-        }
-
-        /* 4. Виділений діапазон */
-        /* Старт і кінець діапазону - Темний Хакі */
-        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
-            background-color: #8f9779 !important; color: white !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important;
-        }
-        /* Дні всередині діапазону - Світлий Хакі (Без квадратних тіней!) */
-        .flatpickr-day.inRange {
-            background-color: #dce0d1 !important; color: #2c3e50 !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important;
-        }
+        /* Стиль для фінального чеку */
+        #summary-content { text-align: left; background: #fff; padding: 15px; border-radius: 8px; font-size: 14px; line-height: 1.6; border: 2px dashed #8f9779; margin-bottom: 15px; }
+        #summary-content b { color: #2c3e50; }
+        .summary-disclaimer { font-size: 12px; color: #7f8c8d; border-top: 1px solid #e0e0e0; padding-top: 10px; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -72,9 +48,7 @@
             <option value="65e8863a5cc7538d464e3eab">FAMILY №3 (сімейний котедж)</option>
             <option value="65e886505cc7538d464e3f1d">FAMILY №4 (сімейний котедж)</option>
         </select>
-        
         <div id="loader">⏳ Звіряємо бортові журнали...</div>
-        
         <div id="calendar-wrapper" style="display: none;">
             <input type="text" id="inlineCalendar" style="display:none;">
             <button id="nextBtnStep1" style="display:none;" onclick="goToStep2()">Продовжити бронювання</button>
@@ -98,6 +72,13 @@
         <button class="btn-outline" onclick="goBack(3)" style="border: none; margin-top: 10px;">Назад</button>
     </div>
 
+    <div id="step-5" class="step-container">
+        <h3 style="color: #2c3e50; margin-top: 0; font-size: 18px;">Капітан підготував чек 📜</h3>
+        <div id="summary-content"></div>
+        <button onclick="confirmBooking()">✅ Підтвердити та забронювати</button>
+        <button class="btn-outline" onclick="cancelAndRestart()">🔄 Почати спочатку</button>
+    </div>
+
     <div id="message">⚓ Перевіряємо та бронюємо...</div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -114,10 +95,13 @@
         const guestPhone = urlParams.get('guest_phone')?.replace(' ', '+') || "Не вказано";
 
         const checkDatesUrl = "https://script.google.com/macros/s/AKfycbzsTNRpYZ38kHrurbQ9q289W7PJdrPDr614Zjc07FiyMy663CJowAl_Rtnsftwb_jQQ/exec";
-        const bookUrl = "https://script.google.com/macros/s/AKfycbwQNcWFZPXQHNY4VRUUujMIqJsHXA5O-vNmvKICxwQfiJfQH71AZlHQUU74OSFfwEOxrw/exec";
+        
+        // ⚠️ ВАЖЛИВО: Заміни це посилання на своє НОВЕ посилання після розгортання скрипту!
+        const bookUrl = "ТУТ_ТВОЄ_НОВЕ_ПОСИЛАННЯ_З_РОЗГОРТАННЯ";
 
         let fpInstance = null; 
         let finalCheckIn = "", finalCheckOut = "", finalGuests = "", finalPets = "", finalRoomId = "";
+        let currentBookingId = null;
 
         function updateHeader(title, subtitle) {
             document.getElementById('main-title').innerText = title;
@@ -135,7 +119,6 @@
 
         function loadCalendarDates() {
             finalRoomId = document.getElementById('cottageSelect').value;
-            
             document.getElementById('loader').style.display = 'block';
             document.getElementById('calendar-wrapper').style.display = 'none';
             document.getElementById('nextBtnStep1').style.display = 'none';
@@ -147,21 +130,12 @@
                     document.getElementById('calendar-wrapper').style.display = 'block';
 
                     const bookedDatesSet = new Set(disabledDatesArray);
-
                     if (fpInstance) fpInstance.destroy();
 
                     fpInstance = flatpickr("#inlineCalendar", {
-                        inline: true,
-                        mode: "range",
-                        minDate: "today",
-                        locale: "uk",
-                        showMonths: 1,
-                        disable: disabledDatesArray,
+                        inline: true, mode: "range", minDate: "today", locale: "uk", showMonths: 1, disable: disabledDatesArray,
                         onDayCreate: function(dObj, dStr, fp, dayElem) {
-                            const dateStrFormatted = fp.formatDate(dayElem.dateObj, "Y-m-d");
-                            if (bookedDatesSet.has(dateStrFormatted)) {
-                                dayElem.classList.add("booked-date");
-                            }
+                            if (bookedDatesSet.has(fp.formatDate(dayElem.dateObj, "Y-m-d"))) dayElem.classList.add("booked-date");
                         },
                         onChange: function(selectedDates, dateStr, instance) {
                             if (selectedDates.length === 2) {
@@ -173,53 +147,31 @@
                             }
                         }
                     });
-                })
-                .catch(error => {
-                    document.getElementById('loader').innerText = "❌ Помилка зв'язку. Спробуйте пізніше.";
-                });
+                }).catch(e => document.getElementById('loader').innerText = "❌ Помилка зв'язку. Спробуйте пізніше.");
         }
 
         function goToStep2() {
-            const juniorId = "65e8865b5cc7538d464e3f77";
-            const maxGuests = (finalRoomId === juniorId) ? 4 : 6; 
-            
+            const maxGuests = (finalRoomId === "65e8865b5cc7538d464e3f77") ? 4 : 6; 
             const guestDiv = document.getElementById("guest-buttons");
-            guestDiv.innerHTML = ""; 
-            guestDiv.style.gridTemplateColumns = (maxGuests === 4) ? "repeat(2, 1fr)" : "repeat(3, 1fr)";
-
+            guestDiv.innerHTML = ""; guestDiv.style.gridTemplateColumns = (maxGuests === 4) ? "repeat(2, 1fr)" : "repeat(3, 1fr)";
             for(let i = 1; i <= maxGuests; i++) {
-                let btn = document.createElement("button");
-                btn.className = "guest-btn";
-                btn.innerText = i + " 👤";
-                btn.onclick = function() { finalGuests = i; goToStep3(); };
-                guestDiv.appendChild(btn);
+                let btn = document.createElement("button"); btn.className = "guest-btn"; btn.innerText = i + " 👤";
+                btn.onclick = function() { finalGuests = i; goToStep3(); }; guestDiv.appendChild(btn);
             }
-            updateHeader("Скільки вас буде?", "Оберіть кількість осіб"); 
-            showStep(2);
+            updateHeader("Скільки вас буде?", "Оберіть кількість осіб"); showStep(2);
         }
 
         function goToStep3() { updateHeader("Ви з пухнастиком?", "Ми дружні до тварин"); showStep(3); }
 
-        // 🔥 ОНОВЛЕНА ФУНКЦІЯ ДЛЯ ЧАНУ
         function goToStep4(petAnswer) {
             finalPets = petAnswer;
-            
-            // ID котеджів, для яких чан доступний (Family 3 та Family 4)
-            const family3Id = "65e8863a5cc7538d464e3eab";
-            const family4Id = "65e886505cc7538d464e3f1d";
-
-            if (finalRoomId === family3Id || finalRoomId === family4Id) {
-                // Показуємо крок з чаном
-                updateHeader("Бажаєте гарячий чан?", "Ідеально для вечірнього релаксу");
-                showStep(4);
-            } else {
-                // Пропускаємо крок і відразу відправляємо дані
-                submitData("На місці (по ситуації)");
-            }
+            if (finalRoomId === "65e8863a5cc7538d464e3eab" || finalRoomId === "65e886505cc7538d464e3f1d") {
+                updateHeader("Бажаєте гарячий чан?", "Ідеально для вечірнього релаксу"); showStep(4);
+            } else { submitData("На місці (по ситуації)"); }
         }
 
         function goBack(stepNumber) {
-            if(stepNumber === 1) updateHeader("Бронювання котеджу ⚓", "🔴 Зайнято | 🟢 Вільно");
+            if(stepNumber === 1) { updateHeader("Бронювання котеджу ⚓", "🔴 Зайнято | 🟢 Вільно"); document.getElementById('nextBtnStep1').style.display = 'none'; }
             if(stepNumber === 2) updateHeader("Скільки вас буде?", "Оберіть кількість осіб");
             if(stepNumber === 3) updateHeader("Ви з пухнастиком?", "Ми дружні до тварин");
             showStep(stepNumber);
@@ -229,33 +181,71 @@
             document.querySelectorAll('.step-container').forEach(el => { el.style.display = 'none'; el.classList.remove('active'); });
 
             const msgDiv = document.getElementById('message');
-            msgDiv.style.display = 'block';
-            msgDiv.style.color = "#8f9779";
-            msgDiv.innerText = "⚓ Відправляємо запит..."; 
-            updateHeader("Майже готово!", "Бронюємо ваші дати...");
+            msgDiv.style.display = 'block'; msgDiv.style.color = "#8f9779";
+            msgDiv.innerText = "⚓ Отримуємо точний розрахунок від Капітана..."; 
+            updateHeader("Оформлюємо чек", "Перевіряємо ціни у Bookmenow...");
 
-            const finalUrl = `${bookUrl}?userId=${userId}&checkIn=${finalCheckIn}&checkOut=${finalCheckOut}&guests=${finalGuests}&pets=${finalPets}&chan=${chanAnswer}&roomId=${finalRoomId}&guestName=${encodeURIComponent(guestName)}&guestPhone=${encodeURIComponent(guestPhone)}`;
+            const finalUrl = `${bookUrl}?action=book&userId=${userId}&checkIn=${finalCheckIn}&checkOut=${finalCheckOut}&guests=${finalGuests}&pets=${finalPets}&chan=${chanAnswer}&roomId=${finalRoomId}&guestName=${encodeURIComponent(guestName)}&guestPhone=${encodeURIComponent(guestPhone)}`;
 
-            fetch(finalUrl)
-                .then(response => response.text())
-                .then(data => {
-                    if (data.includes("Зайнято")) {
-                        msgDiv.style.color = "#e74c3c"; 
-                        msgDiv.innerText = "⚠️ На жаль, ці дати вже зайняті екіпажем! Оберіть інші.";
-                        setTimeout(() => { msgDiv.style.display = 'none'; fpInstance.clear(); goBack(1); }, 3500);
-                    } else if (data.includes("Error")) {
-                        msgDiv.style.color = "#e74c3c";
-                        msgDiv.innerText = "❌ Шторм на лінії! Повертаємо в чат.";
-                        setTimeout(() => { if (tg) tg.close(); }, 2500);
-                    } else {
-                        msgDiv.style.color = "#4CAF50"; 
-                        msgDiv.innerText = "✅ Дати успішно заброньовано! Повертайтеся в чат для оплати.";
-                        setTimeout(() => { if (tg) tg.close(); }, 2500);
-                    }
-                })
-                .catch(e => {
-                    msgDiv.style.color = "#4CAF50"; msgDiv.innerText = "✅ Перевіряйте повідомлення в Telegram";
+            fetch(finalUrl).then(response => response.json()).then(data => {
+                msgDiv.style.display = 'none';
+                if (data.error && data.error.includes("Зайнято")) {
+                    msgDiv.style.display = 'block'; msgDiv.style.color = "#e74c3c"; msgDiv.innerText = "⚠️ Дати вже зайняті екіпажем! Оберіть інші.";
+                    setTimeout(() => { msgDiv.style.display = 'none'; if(fpInstance) fpInstance.clear(); goBack(1); }, 3500);
+                } else if (data.error) {
+                    msgDiv.style.display = 'block'; msgDiv.style.color = "#e74c3c"; msgDiv.innerText = "❌ Шторм на лінії! Повертаємо в чат.";
                     setTimeout(() => { if (tg) tg.close(); }, 2500);
+                } else {
+                    currentBookingId = data.bookingId;
+                    let extraHtml = data.extraFeeText ? data.extraFeeText.replace(/\n/g, "<br>") + "<br>" : "";
+
+                    document.getElementById('summary-content').innerHTML = `
+                        <b>🏠 Ваш вибір:</b> ${data.roomName}<br>
+                        <b>📅 Дати:</b> ${data.checkIn} — ${data.checkOut} (${data.nights} ночі)<br>
+                        <b>👥 Екіпаж:</b> ${data.guests} осіб | <b>🐶 Хвостик:</b> ${data.pets} | <b>♨️ Чан:</b> ${data.chan}<br><br>
+                        ${extraHtml}
+                        <b>💵 Вартість:</b> <s>${data.basePrice} грн</s><br>
+                        <b>🎁 Знижка від Капітана:</b> -${data.discount} грн<br>
+                        <b>✅ Разом до сплати:</b> ${data.totalPrice} грн<br><br>
+                        <b>💳 Передоплата (50%):</b> ${data.prepayment} грн<br>
+                        <div class="summary-disclaimer">
+                            🎖️ <b>Пільга УБД:</b> Знижку -10% можна отримати при заїзді.<br>
+                            ⏳ <b>Важливо:</b> Дати зарезервовані за вами. Будь ласка, підтвердіть та здійсніть оплату в чаті протягом 30 хвилин.
+                        </div>
+                    `;
+                    updateHeader("Бортовий журнал 📋", "Перевірте деталі перед оплатою");
+                    showStep(5);
+                }
+            }).catch(e => {
+                msgDiv.style.display = 'block'; msgDiv.style.color = "#e74c3c"; msgDiv.innerText = "❌ Помилка підключення.";
+                setTimeout(() => { if (tg) tg.close(); }, 2500);
+            });
+        }
+
+        function confirmBooking() {
+            document.querySelectorAll('.step-container').forEach(el => { el.style.display = 'none'; el.classList.remove('active'); });
+            const msgDiv = document.getElementById('message');
+            msgDiv.style.display = 'block'; msgDiv.style.color = "#4CAF50";
+            msgDiv.innerText = "✅ Дати успішно зафіксовано! Повертайтеся в чат для оплати.";
+
+            fetch(`${bookUrl}?action=confirm&userId=${userId}`)
+                .then(() => { setTimeout(() => { if (tg) tg.close(); }, 2000); })
+                .catch(() => { setTimeout(() => { if (tg) tg.close(); }, 2000); });
+        }
+
+        function cancelAndRestart() {
+            document.querySelectorAll('.step-container').forEach(el => { el.style.display = 'none'; el.classList.remove('active'); });
+            const msgDiv = document.getElementById('message');
+            msgDiv.style.display = 'block'; msgDiv.style.color = "#8f9779";
+            msgDiv.innerText = "🔄 Скасовуємо бронь та повертаємо на старт...";
+
+            fetch(`${bookUrl}?action=cancel&bookingId=${currentBookingId}`)
+                .then(() => {
+                    msgDiv.style.display = 'none';
+                    if(fpInstance) fpInstance.clear();
+                    currentBookingId = null;
+                    goBack(1);
+                    loadCalendarDates(); 
                 });
         }
 
