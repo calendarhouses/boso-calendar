@@ -6,45 +6,78 @@
     <title>BOSO Booking & Доступність</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
-        body { font-family: 'Segoe UI', sans-serif; padding: 20px; text-align: center; background-color: #f9f6f0; overflow-x: hidden; }
+        /* Основні налаштування сторінки */
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; text-align: center; background-color: #f9f6f0; overflow-x: hidden; display: flex; flex-direction: column; align-items: center; }
+        
+        /* Аватар та заголовок */
         .bosman-avatar { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #8f9779; margin-bottom: 10px; object-fit: cover; }
-        .step-container { background: white; padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); max-width: 340px; margin: 0 auto; display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
-        .step-container.active { opacity: 1; transform: translateY(0); }
         h2 { color: #2c3e50; font-size: 22px; margin-top: 5px; margin-bottom: 5px; font-weight: 700; }
         p.subtitle { color: #7f8c8d; font-size: 15px; margin-top: 0; margin-bottom: 20px; }
         
-        /* 🔥 ОНОВЛЕНІ СТИЛІ КНОПОК 🔥 */
-        button { background-color: #8f9779; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.2s ease; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(143, 151, 121, 0.3); }
-        button:active { transform: scale(0.98); }
+        /* Контейнер для кроків */
+        .step-container { background: white; padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 360px; margin: 0 auto; display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; box-sizing: border-box; }
+        .step-container.active { opacity: 1; transform: translateY(0); }
+
+        /* Стилі кнопок - СУВОРО ОДНАКОВІ */
+        button { background-color: #8f9779; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s ease; margin-bottom: 12px; box-sizing: border-box; box-shadow: 0 4px 10px rgba(143, 151, 121, 0.3); }
+        button:active { transform: translateY(2px); box-shadow: 0 2px 5px rgba(143, 151, 121, 0.2); }
         
-        /* Стиль для другорядної кнопки (контурної) */
+        /* Кнопка "Назад" та "Почати спочатку" */
         .btn-outline { background-color: transparent; color: #8f9779; border: 2px solid #8f9779; box-shadow: none; }
-        
-        /* Стиль для кнопок вибору гостей */
-        .guest-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .guest-btn { background-color: white; color: #8f9779; border: 2px solid #8f9779; padding: 15px 5px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-bottom: 0; box-shadow: none; }
-        .guest-btn:hover { background-color: #8f9779; color: white; }
-        
-        /* Спеціальний клас для фінальних кнопок, щоб вони були однакові */
-        .final-btn { margin-bottom: 15px; }
+
+        /* Спеціальний клас для фінальних кнопок */
+        .final-btn { margin-bottom: 15px; } 
         .final-btn:last-child { margin-bottom: 0; }
 
-        #message { margin-top: 20px; font-weight: bold; font-size: 16px; display: none; padding: 15px; background: white; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        
+        /* 🔥 ПРЕМІАЛЬНА АНІМАЦІЯ КНОПКИ ПІДТВЕРДИТИ (Левітація) 🔥 */
+        @keyframes levitate-glow {
+            0% { box-shadow: 0 4px 10px rgba(143, 151, 121, 0.3); transform: translateY(0); }
+            50% { box-shadow: 0 10px 20px rgba(143, 151, 121, 0.6); transform: translateY(-3px); }
+            100% { box-shadow: 0 4px 10px rgba(143, 151, 121, 0.3); transform: translateY(0); }
+        }
+        .btn-alive { animation: levitate-glow 2.5s infinite ease-in-out; }
+        /* Вимикаємо анімацію при натисканні, щоб кнопка нормально натискалась */
+        .btn-alive:active { animation: none; transform: translateY(2px); box-shadow: 0 2px 5px rgba(143, 151, 121, 0.2); }
+
+        /* Стилі для виборів */
         .select-css { display: block; font-size: 16px; font-family: inherit; font-weight: 500; color: #2c3e50; line-height: 1.4; padding: 16px 20px; width: 100%; box-sizing: border-box; margin: 0 auto 20px auto; border: 2px solid #e0e0e0; border-radius: 12px; background-color: white; -moz-appearance: none; -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238f9779%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat, repeat; background-position: right 1em top 50%, 0 0; background-size: .8em auto, 100%; outline: none; cursor: pointer; transition: all 0.3s ease; }
         .select-css:hover, .select-css:focus { border-color: #8f9779; }
         #loader { color: #8f9779; font-weight: bold; margin-bottom: 20px; }
         
+        /* Стилі календаря Flatpickr */
+        .flatpickr-calendar { margin: 0 auto; box-shadow: none; border: 1px solid #e0e0e0; border-radius: 12px; }
         .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { visibility: hidden !important; pointer-events: none !important; }
         .flatpickr-day.booked-date { background-color: #e74c3c !important; color: white !important; opacity: 0.8 !important; transform: scale(0.9); border-radius: 50% !important; border: none !important; }
         .flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay):not(.selected):not(.startRange):not(.endRange):not(.inRange) { background-color: #2ecc71 !important; color: white !important; border: none !important; transform: scale(0.9); border-radius: 50% !important; }
         .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background-color: #8f9779 !important; color: white !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important; }
         .flatpickr-day.inRange { background-color: #dce0d1 !important; color: #2c3e50 !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important; }
 
-        /* Стиль для фінального чеку - зробив його більш "паперовим" */
-        #summary-content { text-align: left; background: #fffdf9; padding: 20px; border-radius: 12px; font-size: 15px; line-height: 1.7; border: 2px dashed #dce0d1; margin-bottom: 25px; box-shadow: inset 0 0 20px rgba(143, 151, 121, 0.05); }
-        #summary-content b { color: #2c3e50; font-weight: 700; }
-        .summary-disclaimer { font-size: 13px; color: #7f8c8d; border-top: 1px solid #e0e0e0; padding-top: 15px; margin-top: 15px; }
+        /* Кнопки вибору гостей */
+        .guest-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .guest-btn { background-color: white; color: #8f9779; border: 2px solid #8f9779; padding: 15px 5px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-bottom: 0; box-shadow: none; }
+        .guest-btn:hover { background-color: #8f9779; color: white; }
+
+        /* 🔥 НОВИЙ ПРЕМІАЛЬНИЙ ДИЗАЙН ЧЕКУ 🔥 */
+        #summary-content { text-align: left; background: #fff; padding: 0; border-radius: 12px; font-size: 14px; line-height: 1.5; border: 1px solid #e0e0e0; margin-bottom: 25px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .summary-header { background-color: #8f9779; color: white; padding: 15px; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+        .summary-header-icon { font-size: 20px; margin-right: 8px; }
+        .summary-body { padding: 20px; }
+        .summary-section { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed #e0e0e0; }
+        .summary-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
+        .summary-row:last-child { margin-bottom: 0; }
+        .summary-label { color: #7f8c8d; font-weight: 500; display: flex; align-items: center; }
+        .summary-icon { font-size: 15px; margin-right: 8px; background: #f9f6f0; border-radius: 6px; padding: 4px; display: flex; justify-content: center; align-items: center; }
+        .summary-value { color: #2c3e50; font-weight: 600; text-align: right; max-width: 60%; line-height: 1.3; }
+        .summary-value.price { font-size: 15px; }
+        .summary-value.total { font-size: 20px; color: #2c3e50; font-weight: 800; }
+        .summary-value.discount { color: #e74c3c; font-weight: 700; }
+        .summary-value.strikethrough { text-decoration: line-through; color: #95a5a6; font-weight: 400; }
+        .summary-total-box { background-color: #f9f6f0; padding: 15px; border-radius: 10px; margin-top: 10px; border: 1px solid #eee; }
+        .summary-disclaimer { font-size: 12px; color: #95a5a6; background-color: #fafafa; padding: 15px; border-top: 1px solid #e0e0e0; line-height: 1.5; text-align: center; }
+
+        /* 🔥 ВИПРАВЛЕНИЙ БЛОК ПОВІДОМЛЕННЯ 🔥 */
+        #message { margin: 20px auto 0 auto; width: fit-content; max-width: 90%; font-weight: bold; font-size: 15px; display: none; padding: 16px 24px; background: white; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -69,25 +102,24 @@
 
     <div id="step-2" class="step-container">
         <div id="guest-buttons" class="guest-grid"></div>
-        <button class="btn-outline" onclick="goBack(1)" style="padding: 12px; font-size: 15px; margin-top: 10px;">Назад</button>
+        <button class="btn-outline" onclick="goBack(1)">Назад</button>
     </div>
 
     <div id="step-3" class="step-container">
         <button onclick="goToStep4('Так')">🐶 Так, ми з хвостиком</button>
         <button class="btn-outline" onclick="goToStep4('Ні')">Ні, без тварин</button>
-        <button class="btn-outline" onclick="goBack(2)" style="border: none; margin-top: 15px; padding: 12px;">Назад</button>
+        <button class="btn-outline" onclick="goBack(2)" style="border: none; margin-top: 10px;">Назад</button>
     </div>
 
     <div id="step-4" class="step-container">
         <button onclick="submitData('Так')">♨️ Так, обов'язково!</button>
         <button class="btn-outline" onclick="submitData('Ні')">Ні, дякую</button>
-        <button class="btn-outline" onclick="goBack(3)" style="border: none; margin-top: 15px; padding: 12px;">Назад</button>
+        <button class="btn-outline" onclick="goBack(3)" style="border: none; margin-top: 10px;">Назад</button>
     </div>
 
     <div id="step-5" class="step-container">
-        <h3 style="color: #2c3e50; margin-top: 0; font-size: 20px; margin-bottom: 20px;">Капітан підготував чек 📜</h3>
         <div id="summary-content"></div>
-        <button class="final-btn" onclick="confirmBooking()">✅ Підтвердити та забронювати</button>
+        <button class="final-btn btn-alive" onclick="confirmBooking()">✅ Підтвердити та забронювати</button>
         <button class="btn-outline final-btn" onclick="cancelAndRestart()">🔄 Почати спочатку</button>
     </div>
 
@@ -108,8 +140,8 @@
 
         const checkDatesUrl = "https://script.google.com/macros/s/AKfycbzsTNRpYZ38kHrurbQ9q289W7PJdrPDr614Zjc07FiyMy663CJowAl_Rtnsftwb_jQQ/exec";
         
-        // ⚠️ ВАЖЛИВО: Заміни це посилання на своє АКТУАЛЬНЕ посилання на скрипт бронювання!
-        const bookUrl = "https://script.google.com/macros/s/AKfycbwQNcWFZPXQHNY4VRUUujMIqJsHXA5O-vNmvKICxwQfiJfQH71AZlHQUU74OSFfwEOxrw/exec";
+        // ⚠️ ВАЖЛИВО: Встав сюди своє АКТУАЛЬНЕ посилання на скрипт!
+        const bookUrl = "ТУТ_ТВОЄ_НОВЕ_ПОСИЛАННЯ_З_РОЗГОРТАННЯ";
 
         let fpInstance = null; 
         let finalCheckIn = "", finalCheckOut = "", finalGuests = "", finalPets = "", finalRoomId = "";
@@ -194,9 +226,8 @@
 
             const msgDiv = document.getElementById('message');
             msgDiv.style.display = 'block'; msgDiv.style.color = "#8f9779";
-            // 🔥 Оновлений текст лоадера 🔥
             msgDiv.innerText = "⚓ Отримуємо точний розрахунок від Капітана..."; 
-            updateHeader("Оформлюємо чек", "Зачекайте кілька секунд...");
+            updateHeader("Оформлюємо чек", ""); 
 
             const finalUrl = `${bookUrl}?action=book&userId=${userId}&checkIn=${finalCheckIn}&checkOut=${finalCheckOut}&guests=${finalGuests}&pets=${finalPets}&chan=${chanAnswer}&roomId=${finalRoomId}&guestName=${encodeURIComponent(guestName)}&guestPhone=${encodeURIComponent(guestPhone)}`;
 
@@ -210,23 +241,59 @@
                     setTimeout(() => { if (tg) tg.close(); }, 2500);
                 } else {
                     currentBookingId = data.bookingId;
-                    let extraHtml = data.extraFeeText ? data.extraFeeText.replace(/\n/g, "<br>") + "<br>" : "";
+                    
+                    // 🔥 ГЕНЕРАЦІЯ ДОРОГОГО ЧЕКУ ІЗ ЗАХИСТОМ ВІД БАГІВ ТЕГІВ 🔥
+                    let extraRows = "";
+                    if (data.extraFeeText) {
+                        data.extraFeeText.split('\n').forEach(fee => {
+                            let cleanFee = fee.replace(/<\/?b>/g, ''); // Зрізаємо HTML теги
+                            let parts = cleanFee.split(':');
+                            if(parts.length > 1) {
+                                let label = parts[0].replace('➕ ', '').replace('🐶 ', '').trim();
+                                let value = parts[1].replace('+', '').trim();
+                                let icon = fee.includes('🐶') ? '🐶' : '➕';
+                                extraRows += `<div class="summary-row"><div class="summary-label"><span class="summary-icon">${icon}</span>${label}</div><div class="summary-value price">${value}</div></div>`;
+                            }
+                        });
+                    }
+
+                    // Логіка знижки (Показуємо тільки якщо вона є)
+                    let discountHtml = "";
+                    if (data.discount > 0) {
+                        discountHtml = `
+                        <div class="summary-section">
+                            <div class="summary-row"><div class="summary-label">Базова вартість</div><div class="summary-value price strikethrough">${data.basePrice} грн</div></div>
+                            <div class="summary-row"><div class="summary-label">Знижка Капітана 🎁</div><div class="summary-value price discount">-${data.discount} грн</div></div>
+                        </div>`;
+                    }
 
                     document.getElementById('summary-content').innerHTML = `
-                        <b>🏠 Ваш вибір:</b> ${data.roomName}<br>
-                        <b>📅 Дати:</b> ${data.checkIn} — ${data.checkOut} (${data.nights} ночі)<br>
-                        <b>👥 Екіпаж:</b> ${data.guests} осіб | <b>🐶 Хвостик:</b> ${data.pets} | <b>♨️ Чан:</b> ${data.chan}<br><br>
-                        ${extraHtml}
-                        <b>💵 Вартість:</b> <s>${data.basePrice} грн</s><br>
-                        <b>🎁 Знижка від Капітана:</b> -${data.discount} грн<br>
-                        <b>✅ Разом до сплати:</b> ${data.totalPrice} грн<br><br>
-                        <b>💳 Передоплата (50%):</b> ${data.prepayment} грн<br>
+                        <div class="summary-header">
+                            <span class="summary-header-icon">🧾</span> Деталі бронювання
+                        </div>
+                        <div class="summary-body">
+                            <div class="summary-section">
+                                <div class="summary-row"><div class="summary-label"><span class="summary-icon">🏠</span>Котедж</div><div class="summary-value" style="font-size: 13px;">${data.roomName}</div></div>
+                                <div class="summary-row"><div class="summary-label"><span class="summary-icon">📅</span>Дати</div><div class="summary-value" style="font-size: 13px;">${data.checkIn} — ${data.checkOut}</div></div>
+                                <div class="summary-row"><div class="summary-label"><span class="summary-icon">🌙</span>Ночей</div><div class="summary-value">${data.nights}</div></div>
+                            </div>
+                            <div class="summary-section">
+                                <div class="summary-row"><div class="summary-label"><span class="summary-icon">👥</span>Гості</div><div class="summary-value">${data.guests} осіб</div></div>
+                                <div class="summary-row"><div class="summary-label"><span class="summary-icon">🐶</span>Тварини</div><div class="summary-value">${data.pets}</div></div>
+                                <div class="summary-row"><div class="summary-label"><span class="summary-icon">♨️</span>Чан</div><div class="summary-value">${data.chan}</div></div>
+                            </div>
+                            ${extraRows ? `<div class="summary-section">${extraRows}</div>` : ''}
+                            ${discountHtml}
+                            <div class="summary-total-box">
+                                <div class="summary-row"><div class="summary-label" style="font-size: 16px; color: #2c3e50; font-weight: bold;">Разом:</div><div class="summary-value total">${data.totalPrice} грн</div></div>
+                                <div class="summary-row" style="margin-top: 5px;"><div class="summary-label" style="font-size: 13px;">Передоплата (50%)</div><div class="summary-value price" style="color: #2c3e50;">${data.prepayment} грн</div></div>
+                            </div>
+                        </div>
                         <div class="summary-disclaimer">
-                            🎖️ <b>Пільга УБД:</b> Знижку -10% можна отримати при заїзді.<br>
-                            ⏳ <b>Важливо:</b> Дати зарезервовані за вами. Будь ласка, підтвердіть та здійсніть оплату в чаті протягом 30 хвилин.
+                            ⏳ <b>Важливо:</b> Дати зарезервовані за вами. Підтвердіть та здійсніть оплату в чаті протягом 30 хвилин.
                         </div>
                     `;
-                    updateHeader("Бортовий журнал 📋", "Перевірте деталі перед оплатою");
+                    updateHeader("Капітан підготував чек 📜", "");
                     showStep(5);
                 }
             }).catch(e => {
