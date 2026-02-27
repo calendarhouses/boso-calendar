@@ -42,23 +42,15 @@
         .select-css:hover, .select-css:focus { border-color: #8f9779; box-shadow: 0 0 0 3px rgba(143, 151, 121, 0.1); }
         #loader { color: #8f9779; font-weight: 500; font-size: 15px; margin-bottom: 20px; }
         
-        /* 🔥 ВИПРАВЛЕННЯ КАЛЕНДАРЯ (Вирівнювання та кольори) 🔥 */
+        /* 🔥 КАЛЕНДАР 🔥 */
         .flatpickr-calendar { margin: 0 auto; box-shadow: none; border: 1px solid #e2e8f0; border-radius: 14px; padding: 5px; width: 100% !important; max-width: 100% !important; box-sizing: border-box; }
         .flatpickr-days { width: 100% !important; }
         .dayContainer { width: 100% !important; min-width: auto !important; max-width: 100% !important; justify-content: space-around; }
 
         .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { visibility: hidden !important; pointer-events: none !important; }
-        
-        /* Зайняті дати - більш насичений червоний */
         .flatpickr-day.booked-date { background-color: #fee2e2 !important; color: #991b1b !important; font-weight: 600 !important; opacity: 1 !important; transform: scale(0.9); border-radius: 50% !important; border: none !important; }
-        
-        /* Вільні дати - більш живий зелений */
         .flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay):not(.selected):not(.startRange):not(.endRange):not(.inRange) { background-color: #dcfce7 !important; color: #166534 !important; font-weight: 600 !important; border: none !important; transform: scale(0.9); border-radius: 50% !important; }
-        
-        /* Вибрані дати - бренд колір */
         .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background-color: #8f9779 !important; color: white !important; font-weight: 700 !important; border: none !important; border-radius: 50% !important; transform: scale(0.95) !important; box-shadow: none !important; }
-        
-        /* Дати в проміжку - трохи виразніший оливковий */
         .flatpickr-day.inRange { background-color: #e2e8d8 !important; color: #3f4a30 !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important; }
 
 
@@ -340,14 +332,14 @@
                 .catch(() => { setTimeout(() => { if (tg) tg.close(); }, 2000); });
         }
 
+        // 🔥 ВИПРАВЛЕНО БАГ З USER_ID У ФУНКЦІЇ СКАСУВАННЯ 🔥
         function cancelAndRestart() {
             document.querySelectorAll('.step-container').forEach(el => { el.style.display = 'none'; el.classList.remove('active'); });
             const msgDiv = document.getElementById('message');
             msgDiv.style.display = 'block'; msgDiv.style.color = "#8f9779";
-            // 🔥 ТИХИЙ ВІДКАТ 🔥
             msgDiv.innerText = "🔄 Повертаємось назад...";
 
-            fetch(`${bookUrl}?action=cancel&bookingId=${currentBookingId}`)
+            fetch(`${bookUrl}?action=cancel&bookingId=${currentBookingId}&userId=${userId}`)
                 .then(() => {
                     msgDiv.style.display = 'none';
                     if(fpInstance) fpInstance.clear();
