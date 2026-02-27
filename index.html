@@ -199,7 +199,25 @@
         }
 
         function goToStep3() { updateHeader("Ви з пухнастиком?", "Ми дружні до тварин"); showStep(3); }
-        function goToStep4(petAnswer) { finalPets = petAnswer; updateHeader("Бажаєте гарячий чан?", "Ідеально для вечірнього релаксу"); showStep(4); }
+
+        // 🔥 ОНОВЛЕНА ФУНКЦІЯ ДЛЯ ЧАНУ
+        function goToStep4(petAnswer) {
+            finalPets = petAnswer;
+            
+            // ID котеджів, для яких чан доступний (Family 3 та Family 4)
+            const family3Id = "65e8863a5cc7538d464e3eab";
+            const family4Id = "65e886505cc7538d464e3f1d";
+
+            if (finalRoomId === family3Id || finalRoomId === family4Id) {
+                // Показуємо крок з чаном
+                updateHeader("Бажаєте гарячий чан?", "Ідеально для вечірнього релаксу");
+                showStep(4);
+            } else {
+                // Пропускаємо крок і відразу відправляємо дані
+                submitData("На місці (по ситуації)");
+            }
+        }
+
         function goBack(stepNumber) {
             if(stepNumber === 1) updateHeader("Бронювання котеджу ⚓", "🔴 Зайнято | 🟢 Вільно");
             if(stepNumber === 2) updateHeader("Скільки вас буде?", "Оберіть кількість осіб");
