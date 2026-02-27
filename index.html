@@ -7,78 +7,81 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         /* Основні налаштування сторінки */
-        body { font-family: 'Segoe UI', sans-serif; padding: 20px; text-align: center; background-color: #f9f6f0; overflow-x: hidden; display: flex; flex-direction: column; align-items: center; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 20px; text-align: center; background-color: #f9f6f0; overflow-x: hidden; display: flex; flex-direction: column; align-items: center; color: #2d3748; }
         
         /* Аватар та заголовок */
-        .bosman-avatar { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #8f9779; margin-bottom: 10px; object-fit: cover; }
-        h2 { color: #2c3e50; font-size: 22px; margin-top: 5px; margin-bottom: 5px; font-weight: 700; }
-        p.subtitle { color: #7f8c8d; font-size: 15px; margin-top: 0; margin-bottom: 20px; }
+        .bosman-avatar { width: 90px; height: 90px; border-radius: 50%; border: 3px solid #8f9779; margin-bottom: 12px; object-fit: cover; box-shadow: 0 4px 12px rgba(143, 151, 121, 0.2); }
+        h2 { color: #1a202c; font-size: 22px; margin-top: 0; margin-bottom: 6px; font-weight: 700; letter-spacing: -0.3px; }
+        p.subtitle { color: #718096; font-size: 14px; margin-top: 0; margin-bottom: 24px; font-weight: 400; }
         
         /* Контейнер для кроків */
-        .step-container { background: white; padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); width: 100%; max-width: 360px; margin: 0 auto; display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; box-sizing: border-box; }
+        .step-container { background: white; padding: 24px 20px; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.04); width: 100%; max-width: 360px; margin: 0 auto; display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; box-sizing: border-box; }
         .step-container.active { opacity: 1; transform: translateY(0); }
 
         /* 🔥 ОСНОВНА КНОПКА 🔥 */
-        button { background-color: #8f9779; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.3s ease; margin-bottom: 12px; box-sizing: border-box; box-shadow: 0 4px 12px rgba(143, 151, 121, 0.3); }
+        button { background-color: #8f9779; color: white; border: none; padding: 16px; width: 100%; border-radius: 14px; font-weight: 600; font-size: 16px; cursor: pointer; transition: all 0.25s ease; margin-bottom: 12px; box-sizing: border-box; box-shadow: 0 4px 15px rgba(143, 151, 121, 0.25); letter-spacing: 0.3px; }
         
-        /* 🔥 ДРУГОРЯДНА КНОПКА (Виділена, преміальна) 🔥 */
-        .btn-outline { background-color: #f4f6f0; color: #5a6650; border: 1px solid #dce0d1; box-shadow: none; font-weight: 600; }
-        .btn-outline:active { background-color: #e8ece1; transform: translateY(1px); }
+        /* 🔥 ДРУГОРЯДНА КНОПКА 🔥 */
+        .btn-outline { background-color: #f7f9f5; color: #6a755d; border: 1px solid #e2e8e0; box-shadow: none; font-weight: 500; }
+        .btn-outline:active { background-color: #edf2e9; transform: scale(0.98); }
 
-        /* Спеціальний клас для фінальних кнопок */
         .final-btn { margin-bottom: 12px; } 
         .final-btn:last-child { margin-bottom: 0; }
 
-        /* 🔥 ПУЛЬСУЮЧА АНІМАЦІЯ КНОПКИ ПІДТВЕРДИТИ 🔥 */
-        @keyframes pulse-scale {
-            0% { transform: scale(1); box-shadow: 0 4px 12px rgba(143, 151, 121, 0.3); }
-            50% { transform: scale(1.025); box-shadow: 0 8px 18px rgba(143, 151, 121, 0.45); }
-            100% { transform: scale(1); box-shadow: 0 4px 12px rgba(143, 151, 121, 0.3); }
+        /* 🔥 ЖИВА АНІМАЦІЯ КНОПКИ ПІДТВЕРДИТИ 🔥 */
+        @keyframes pulse-premium {
+            0% { transform: scale(1); box-shadow: 0 4px 15px rgba(143, 151, 121, 0.25); }
+            50% { transform: scale(1.02); box-shadow: 0 8px 20px rgba(143, 151, 121, 0.4); }
+            100% { transform: scale(1); box-shadow: 0 4px 15px rgba(143, 151, 121, 0.25); }
         }
-        .btn-alive { animation: pulse-scale 2s infinite ease-in-out; }
-        .btn-alive:active { animation: none; transform: scale(0.98); box-shadow: 0 2px 5px rgba(143, 151, 121, 0.2); }
+        .btn-alive { animation: pulse-premium 2.5s infinite ease-in-out; }
+        .btn-alive:active { animation: none; transform: scale(0.98); box-shadow: 0 2px 8px rgba(143, 151, 121, 0.2); }
 
-        /* Стилі для виборів */
-        .select-css { display: block; font-size: 16px; font-family: inherit; font-weight: 500; color: #2c3e50; line-height: 1.4; padding: 16px 20px; width: 100%; box-sizing: border-box; margin: 0 auto 20px auto; border: 2px solid #e0e0e0; border-radius: 12px; background-color: white; -moz-appearance: none; -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238f9779%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat, repeat; background-position: right 1em top 50%, 0 0; background-size: .8em auto, 100%; outline: none; cursor: pointer; transition: all 0.3s ease; }
-        .select-css:hover, .select-css:focus { border-color: #8f9779; }
-        #loader { color: #8f9779; font-weight: bold; margin-bottom: 20px; }
+        /* Елементи вибору */
+        .select-css { display: block; font-size: 15px; font-family: inherit; font-weight: 500; color: #2d3748; line-height: 1.4; padding: 16px 20px; width: 100%; box-sizing: border-box; margin: 0 auto 20px auto; border: 1px solid #e2e8f0; border-radius: 14px; background-color: #fdfdfd; -moz-appearance: none; -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238f9779%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat, repeat; background-position: right 1em top 50%, 0 0; background-size: .8em auto, 100%; outline: none; transition: all 0.2s ease; }
+        .select-css:hover, .select-css:focus { border-color: #8f9779; box-shadow: 0 0 0 3px rgba(143, 151, 121, 0.1); }
+        #loader { color: #8f9779; font-weight: 500; font-size: 15px; margin-bottom: 20px; }
         
-        /* Стилі календаря Flatpickr */
-        .flatpickr-calendar { margin: 0 auto; box-shadow: none; border: 1px solid #e0e0e0; border-radius: 12px; }
+        .flatpickr-calendar { margin: 0 auto; box-shadow: none; border: 1px solid #e2e8f0; border-radius: 14px; padding: 5px; }
         .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { visibility: hidden !important; pointer-events: none !important; }
-        .flatpickr-day.booked-date { background-color: #e74c3c !important; color: white !important; opacity: 0.8 !important; transform: scale(0.9); border-radius: 50% !important; border: none !important; }
-        .flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay):not(.selected):not(.startRange):not(.endRange):not(.inRange) { background-color: #2ecc71 !important; color: white !important; border: none !important; transform: scale(0.9); border-radius: 50% !important; }
-        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background-color: #8f9779 !important; color: white !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important; }
-        .flatpickr-day.inRange { background-color: #dce0d1 !important; color: #2c3e50 !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important; }
+        .flatpickr-day.booked-date { background-color: #fee2e2 !important; color: #ef4444 !important; font-weight: 500 !important; opacity: 1 !important; transform: scale(0.9); border-radius: 50% !important; border: none !important; }
+        .flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay):not(.selected):not(.startRange):not(.endRange):not(.inRange) { background-color: #f0fdf4 !important; color: #22c55e !important; font-weight: 500 !important; border: none !important; transform: scale(0.9); border-radius: 50% !important; }
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background-color: #8f9779 !important; color: white !important; font-weight: 600 !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important; }
+        .flatpickr-day.inRange { background-color: #eff3ea !important; color: #2d3748 !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important; }
 
-        /* Кнопки вибору гостей */
-        .guest-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .guest-btn { background-color: white; color: #8f9779; border: 2px solid #8f9779; padding: 15px 5px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-bottom: 0; box-shadow: none; }
-        .guest-btn:hover { background-color: #8f9779; color: white; }
+        .guest-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+        .guest-btn { background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0; padding: 14px 5px; border-radius: 12px; font-size: 16px; font-weight: 500; cursor: pointer; transition: 0.2s; box-shadow: none; }
+        .guest-btn:hover { background-color: #8f9779; color: white; border-color: #8f9779; }
 
-        /* 🔥 ПРЕМІАЛЬНИЙ ДИЗАЙН ЧЕКУ (Очищений текст та відступи) 🔥 */
-        #summary-content { text-align: left; background: #fff; padding: 0; border-radius: 14px; font-size: 15px; line-height: 1.5; border: 1px solid #eaeaea; margin-bottom: 25px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.04); }
-        .summary-header { background-color: #8f9779; color: white; padding: 18px; font-weight: 600; font-size: 17px; text-align: center; letter-spacing: 0.5px; }
-        .summary-body { padding: 22px 20px; }
-        .summary-section { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px dashed #e4e4e4; }
+        /* 🔥 ПРЕМІАЛЬНИЙ ЧЕК (ОЧИЩЕНИЙ ВІД ВАЖКОГО ЖИРНОГО ШРИФТУ) 🔥 */
+        #summary-content { text-align: left; background: #ffffff; padding: 0; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 24px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        .summary-header { background-color: #8f9779; color: white; padding: 16px; font-weight: 600; font-size: 16px; text-align: center; letter-spacing: 0.3px; }
+        .summary-body { padding: 20px; }
+        
+        .summary-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9; }
         .summary-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; align-items: flex-start; }
+        
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: flex-start; }
         .summary-row:last-child { margin-bottom: 0; }
         
-        .summary-label { color: #64748b; font-weight: 500; display: flex; align-items: center; flex: 1; }
-        .summary-icon { font-size: 16px; margin-right: 10px; opacity: 0.9; }
-        .summary-value { color: #0f172a; font-weight: 600; text-align: right; flex: 1.2; line-height: 1.4; }
+        /* Тонкі і акуратні шрифти */
+        .summary-label { color: #718096; font-weight: 400; font-size: 14px; display: flex; align-items: center; flex: 1; }
+        .summary-icon { font-size: 15px; margin-right: 8px; opacity: 0.8; }
+        .summary-value { color: #2d3748; font-weight: 500; font-size: 14.5px; text-align: right; flex: 1.2; line-height: 1.4; letter-spacing: 0.2px; }
         
-        .summary-value.price { font-size: 15px; }
-        .summary-value.total { font-size: 22px; color: #0f172a; font-weight: 800; }
-        .summary-value.discount { color: #e74c3c; font-weight: 700; }
-        .summary-value.strikethrough { text-decoration: line-through; color: #94a3b8; font-weight: 400; }
-        
-        .summary-total-box { background-color: #f4f6f0; padding: 18px; border-radius: 12px; margin-top: 15px; border: 1px solid #e8ece1; }
-        .summary-disclaimer { font-size: 13px; color: #64748b; background-color: #f8fafc; padding: 16px; border-top: 1px solid #e2e8f0; line-height: 1.5; text-align: center; }
+        /* Заборона переносу дат */
+        .nowrap-date { white-space: nowrap; }
 
-        /* Повідомлення про завантаження */
-        #message { margin: 20px auto 0 auto; width: fit-content; max-width: 90%; font-weight: bold; font-size: 15px; display: none; padding: 16px 24px; background: white; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); box-sizing: border-box; }
+        .summary-value.price { font-size: 15px; }
+        .summary-value.total { font-size: 20px; color: #1a202c; font-weight: 700; letter-spacing: -0.5px; }
+        .summary-value.discount { color: #e53e3e; font-weight: 500; }
+        .summary-value.strikethrough { text-decoration: line-through; color: #a0aec0; font-weight: 400; font-size: 13px; }
+        
+        /* Витончений блок з фінальною сумою */
+        .summary-total-box { background-color: #f8fafc; padding: 16px; border-radius: 12px; margin-top: 8px; border: 1px solid #edf2f7; }
+        .summary-disclaimer { font-size: 12px; color: #a0aec0; background-color: #fdfdfd; padding: 14px 20px; border-top: 1px solid #f1f5f9; line-height: 1.5; text-align: center; font-weight: 400; }
+
+        #message { margin: 20px auto 0 auto; width: fit-content; max-width: 90%; font-weight: 500; font-size: 15px; display: none; padding: 16px 24px; background: white; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); box-sizing: border-box; color: #4a5568; }
     </style>
 </head>
 <body>
@@ -124,7 +127,7 @@
         <button class="btn-outline final-btn" onclick="cancelAndRestart()">🔄 Почати спочатку</button>
     </div>
 
-    <div id="message">⚓ Перевіряємо та бронюємо...</div>
+    <div id="message">⚓ Оформлюємо чек...</div>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/uk.js"></script>
@@ -141,7 +144,7 @@
 
         const checkDatesUrl = "https://script.google.com/macros/s/AKfycbzsTNRpYZ38kHrurbQ9q289W7PJdrPDr614Zjc07FiyMy663CJowAl_Rtnsftwb_jQQ/exec";
         
-        // 🔥 АКТУАЛЬНЕ ПОСИЛАННЯ ВЖЕ ТУТ 🔥
+        // 🔥 ТВОЄ АКТУАЛЬНЕ ПОСИЛАННЯ 🔥
         const bookUrl = "https://script.google.com/macros/s/AKfycbwQNcWFZPXQHNY4VRUUujMIqJsHXA5O-vNmvKICxwQfiJfQH71AZlHQUU74OSFfwEOxrw/exec";
 
         let fpInstance = null; 
@@ -222,6 +225,14 @@
             showStep(stepNumber);
         }
 
+        // 🔥 ФУНКЦІЯ ФОРМАТУВАННЯ ДАТИ (2026-10-14 -> 14.10.2026) 🔥
+        function formatDatePremium(dateStr) {
+            if(!dateStr) return "";
+            const parts = dateStr.split('-');
+            if(parts.length !== 3) return dateStr;
+            return `${parts[2]}.${parts[1]}.${parts[0]}`;
+        }
+
         function submitData(chanAnswer) {
             document.querySelectorAll('.step-container').forEach(el => { el.style.display = 'none'; el.classList.remove('active'); });
 
@@ -235,14 +246,21 @@
             fetch(finalUrl).then(response => response.json()).then(data => {
                 msgDiv.style.display = 'none';
                 if (data.error && data.error.includes("Зайнято")) {
-                    msgDiv.style.display = 'block'; msgDiv.style.color = "#e74c3c"; msgDiv.innerText = "⚠️ Дати вже зайняті екіпажем! Оберіть інші.";
+                    msgDiv.style.display = 'block'; msgDiv.style.color = "#e53e3e"; msgDiv.innerText = "⚠️ Дати вже зайняті екіпажем! Оберіть інші.";
                     setTimeout(() => { msgDiv.style.display = 'none'; if(fpInstance) fpInstance.clear(); goBack(1); }, 3500);
                 } else if (data.error) {
-                    msgDiv.style.display = 'block'; msgDiv.style.color = "#e74c3c"; msgDiv.innerText = "❌ Шторм на лінії! Повертаємо в чат.";
+                    msgDiv.style.display = 'block'; msgDiv.style.color = "#e53e3e"; msgDiv.innerText = "❌ Шторм на лінії! Повертаємо в чат.";
                     setTimeout(() => { if (tg) tg.close(); }, 2500);
                 } else {
                     currentBookingId = data.bookingId;
                     
+                    // 🔥 ВІДРІЗАЄМО ТЕКСТ В ДУЖКАХ З НАЗВИ КОТЕДЖУ 🔥
+                    let cleanRoomName = data.roomName ? data.roomName.replace(/\s*\(.*?\)\s*/g, '').trim() : "Котедж BOSO";
+
+                    // 🔥 ФОРМАТУЄМО ДАТИ 🔥
+                    let prettyCheckIn = formatDatePremium(data.checkIn);
+                    let prettyCheckOut = formatDatePremium(data.checkOut);
+
                     let extraRows = "";
                     if (data.extraFeeText) {
                         data.extraFeeText.split('\n').forEach(fee => {
@@ -272,8 +290,8 @@
                         </div>
                         <div class="summary-body">
                             <div class="summary-section">
-                                <div class="summary-row"><div class="summary-label"><span class="summary-icon">🏠</span>Котедж</div><div class="summary-value">${data.roomName}</div></div>
-                                <div class="summary-row"><div class="summary-label"><span class="summary-icon">📅</span>Дати</div><div class="summary-value">${data.checkIn} — ${data.checkOut}</div></div>
+                                <div class="summary-row"><div class="summary-label"><span class="summary-icon">🏠</span>Котедж</div><div class="summary-value">${cleanRoomName}</div></div>
+                                <div class="summary-row"><div class="summary-label"><span class="summary-icon">📅</span>Дати</div><div class="summary-value nowrap-date">${prettyCheckIn} — ${prettyCheckOut}</div></div>
                                 <div class="summary-row"><div class="summary-label"><span class="summary-icon">🌙</span>Ночей</div><div class="summary-value">${data.nights}</div></div>
                             </div>
                             <div class="summary-section">
@@ -284,8 +302,8 @@
                             ${extraRows ? `<div class="summary-section">${extraRows}</div>` : ''}
                             ${discountHtml}
                             <div class="summary-total-box">
-                                <div class="summary-row"><div class="summary-label" style="font-size: 16px; color: #0f172a; font-weight: 700;">Разом:</div><div class="summary-value total">${data.totalPrice} грн</div></div>
-                                <div class="summary-row" style="margin-top: 8px;"><div class="summary-label" style="font-size: 14px;">Передоплата (50%)</div><div class="summary-value price" style="color: #0f172a;">${data.prepayment} грн</div></div>
+                                <div class="summary-row"><div class="summary-label" style="font-size: 16px; color: #1a202c; font-weight: 600;">Разом:</div><div class="summary-value total">${data.totalPrice} грн</div></div>
+                                <div class="summary-row" style="margin-top: 6px;"><div class="summary-label" style="font-size: 13px;">Передоплата (50%)</div><div class="summary-value price" style="color: #4a5568;">${data.prepayment} грн</div></div>
                             </div>
                         </div>
                         <div class="summary-disclaimer">
@@ -296,7 +314,7 @@
                     showStep(5);
                 }
             }).catch(e => {
-                msgDiv.style.display = 'block'; msgDiv.style.color = "#e74c3c"; msgDiv.innerText = "❌ Помилка підключення.";
+                msgDiv.style.display = 'block'; msgDiv.style.color = "#e53e3e"; msgDiv.innerText = "❌ Помилка підключення.";
                 setTimeout(() => { if (tg) tg.close(); }, 2500);
             });
         }
@@ -304,7 +322,7 @@
         function confirmBooking() {
             document.querySelectorAll('.step-container').forEach(el => { el.style.display = 'none'; el.classList.remove('active'); });
             const msgDiv = document.getElementById('message');
-            msgDiv.style.display = 'block'; msgDiv.style.color = "#4CAF50";
+            msgDiv.style.display = 'block'; msgDiv.style.color = "#38a169";
             msgDiv.innerText = "✅ Дати успішно зафіксовано! Повертайтеся в чат для оплати.";
 
             fetch(`${bookUrl}?action=confirm&userId=${userId}`)
