@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BOSO Booking & Доступність</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
@@ -42,18 +42,31 @@
         .select-css:hover, .select-css:focus { border-color: #8f9779; box-shadow: 0 0 0 3px rgba(143, 151, 121, 0.1); }
         #loader { color: #8f9779; font-weight: 500; font-size: 15px; margin-bottom: 20px; }
         
-        .flatpickr-calendar { margin: 0 auto; box-shadow: none; border: 1px solid #e2e8f0; border-radius: 14px; padding: 5px; }
+        /* 🔥 ВИПРАВЛЕННЯ КАЛЕНДАРЯ (Вирівнювання та кольори) 🔥 */
+        .flatpickr-calendar { margin: 0 auto; box-shadow: none; border: 1px solid #e2e8f0; border-radius: 14px; padding: 5px; width: 100% !important; max-width: 100% !important; box-sizing: border-box; }
+        .flatpickr-days { width: 100% !important; }
+        .dayContainer { width: 100% !important; min-width: auto !important; max-width: 100% !important; justify-content: space-around; }
+
         .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { visibility: hidden !important; pointer-events: none !important; }
-        .flatpickr-day.booked-date { background-color: #fee2e2 !important; color: #ef4444 !important; font-weight: 500 !important; opacity: 1 !important; transform: scale(0.9); border-radius: 50% !important; border: none !important; }
-        .flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay):not(.selected):not(.startRange):not(.endRange):not(.inRange) { background-color: #f0fdf4 !important; color: #22c55e !important; font-weight: 500 !important; border: none !important; transform: scale(0.9); border-radius: 50% !important; }
-        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background-color: #8f9779 !important; color: white !important; font-weight: 600 !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important; }
-        .flatpickr-day.inRange { background-color: #eff3ea !important; color: #2d3748 !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important; }
+        
+        /* Зайняті дати - більш насичений червоний */
+        .flatpickr-day.booked-date { background-color: #fee2e2 !important; color: #991b1b !important; font-weight: 600 !important; opacity: 1 !important; transform: scale(0.9); border-radius: 50% !important; border: none !important; }
+        
+        /* Вільні дати - більш живий зелений */
+        .flatpickr-day:not(.flatpickr-disabled):not(.prevMonthDay):not(.nextMonthDay):not(.selected):not(.startRange):not(.endRange):not(.inRange) { background-color: #dcfce7 !important; color: #166534 !important; font-weight: 600 !important; border: none !important; transform: scale(0.9); border-radius: 50% !important; }
+        
+        /* Вибрані дати - бренд колір */
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background-color: #8f9779 !important; color: white !important; font-weight: 700 !important; border: none !important; border-radius: 50% !important; transform: scale(0.95) !important; box-shadow: none !important; }
+        
+        /* Дати в проміжку - трохи виразніший оливковий */
+        .flatpickr-day.inRange { background-color: #e2e8d8 !important; color: #3f4a30 !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important; }
+
 
         .guest-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
         .guest-btn { background-color: #f8fafc; color: #475569; border: 1px solid #e2e8f0; padding: 14px 5px; border-radius: 12px; font-size: 16px; font-weight: 500; cursor: pointer; transition: 0.2s; box-shadow: none; }
         .guest-btn:hover { background-color: #8f9779; color: white; border-color: #8f9779; }
 
-        /* 🔥 ПРЕМІАЛЬНИЙ ЧЕК (ОЧИЩЕНИЙ ВІД ВАЖКОГО ЖИРНОГО ШРИФТУ) 🔥 */
+        /* 🔥 ПРЕМІАЛЬНИЙ ЧЕК 🔥 */
         #summary-content { text-align: left; background: #ffffff; padding: 0; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 24px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
         .summary-header { background-color: #8f9779; color: white; padding: 16px; font-weight: 600; font-size: 16px; text-align: center; letter-spacing: 0.3px; }
         .summary-body { padding: 20px; }
@@ -64,12 +77,10 @@
         .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: flex-start; }
         .summary-row:last-child { margin-bottom: 0; }
         
-        /* Тонкі і акуратні шрифти */
         .summary-label { color: #718096; font-weight: 400; font-size: 14px; display: flex; align-items: center; flex: 1; }
         .summary-icon { font-size: 15px; margin-right: 8px; opacity: 0.8; }
         .summary-value { color: #2d3748; font-weight: 500; font-size: 14.5px; text-align: right; flex: 1.2; line-height: 1.4; letter-spacing: 0.2px; }
         
-        /* Заборона переносу дат */
         .nowrap-date { white-space: nowrap; }
 
         .summary-value.price { font-size: 15px; }
@@ -77,7 +88,6 @@
         .summary-value.discount { color: #e53e3e; font-weight: 500; }
         .summary-value.strikethrough { text-decoration: line-through; color: #a0aec0; font-weight: 400; font-size: 13px; }
         
-        /* Витончений блок з фінальною сумою */
         .summary-total-box { background-color: #f8fafc; padding: 16px; border-radius: 12px; margin-top: 8px; border: 1px solid #edf2f7; }
         .summary-disclaimer { font-size: 12px; color: #a0aec0; background-color: #fdfdfd; padding: 14px 20px; border-top: 1px solid #f1f5f9; line-height: 1.5; text-align: center; font-weight: 400; }
 
@@ -334,7 +344,8 @@
             document.querySelectorAll('.step-container').forEach(el => { el.style.display = 'none'; el.classList.remove('active'); });
             const msgDiv = document.getElementById('message');
             msgDiv.style.display = 'block'; msgDiv.style.color = "#8f9779";
-            msgDiv.innerText = "🔄 Скасовуємо бронь та повертаємо на старт...";
+            // 🔥 ТИХИЙ ВІДКАТ 🔥
+            msgDiv.innerText = "🔄 Повертаємось назад...";
 
             fetch(`${bookUrl}?action=cancel&bookingId=${currentBookingId}`)
                 .then(() => {
