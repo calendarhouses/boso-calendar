@@ -8,20 +8,32 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; padding: 20px; text-align: center; background-color: #f9f6f0; overflow-x: hidden; }
         .bosman-avatar { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #8f9779; margin-bottom: 10px; object-fit: cover; }
-        .step-container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 320px; margin: 0 auto; display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
+        .step-container { background: white; padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); max-width: 340px; margin: 0 auto; display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
         .step-container.active { opacity: 1; transform: translateY(0); }
-        h2 { color: #2c3e50; font-size: 20px; margin-top: 5px; margin-bottom: 5px; }
-        p.subtitle { color: #7f8c8d; font-size: 14px; margin-top: 0; margin-bottom: 15px; }
-        button { background-color: #8f9779; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; margin-bottom: 10px; margin-top: 15px; }
-        .btn-outline { background-color: white; color: #8f9779; border: 2px solid #8f9779; }
-        .guest-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
-        .guest-btn { background-color: white; color: #8f9779; border: 2px solid #8f9779; padding: 15px 5px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-bottom: 0; }
-        .guest-btn:hover { background-color: #8f9779; color: white; }
-        #message { margin-top: 15px; font-weight: bold; font-size: 16px; display: none; }
+        h2 { color: #2c3e50; font-size: 22px; margin-top: 5px; margin-bottom: 5px; font-weight: 700; }
+        p.subtitle { color: #7f8c8d; font-size: 15px; margin-top: 0; margin-bottom: 20px; }
         
-        .select-css { display: block; font-size: 16px; font-family: inherit; font-weight: 500; color: #2c3e50; line-height: 1.4; padding: 14px 20px; width: 100%; box-sizing: border-box; margin: 0 auto 15px auto; border: 2px solid #e0e0e0; border-radius: 12px; background-color: white; -moz-appearance: none; -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238f9779%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat, repeat; background-position: right 1em top 50%, 0 0; background-size: .8em auto, 100%; outline: none; cursor: pointer; transition: all 0.3s ease; }
+        /* 🔥 ОНОВЛЕНІ СТИЛІ КНОПОК 🔥 */
+        button { background-color: #8f9779; color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; transition: all 0.2s ease; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(143, 151, 121, 0.3); }
+        button:active { transform: scale(0.98); }
+        
+        /* Стиль для другорядної кнопки (контурної) */
+        .btn-outline { background-color: transparent; color: #8f9779; border: 2px solid #8f9779; box-shadow: none; }
+        
+        /* Стиль для кнопок вибору гостей */
+        .guest-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .guest-btn { background-color: white; color: #8f9779; border: 2px solid #8f9779; padding: 15px 5px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-bottom: 0; box-shadow: none; }
+        .guest-btn:hover { background-color: #8f9779; color: white; }
+        
+        /* Спеціальний клас для фінальних кнопок, щоб вони були однакові */
+        .final-btn { margin-bottom: 15px; }
+        .final-btn:last-child { margin-bottom: 0; }
+
+        #message { margin-top: 20px; font-weight: bold; font-size: 16px; display: none; padding: 15px; background: white; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        
+        .select-css { display: block; font-size: 16px; font-family: inherit; font-weight: 500; color: #2c3e50; line-height: 1.4; padding: 16px 20px; width: 100%; box-sizing: border-box; margin: 0 auto 20px auto; border: 2px solid #e0e0e0; border-radius: 12px; background-color: white; -moz-appearance: none; -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238f9779%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat, repeat; background-position: right 1em top 50%, 0 0; background-size: .8em auto, 100%; outline: none; cursor: pointer; transition: all 0.3s ease; }
         .select-css:hover, .select-css:focus { border-color: #8f9779; }
-        #loader { color: #8f9779; font-weight: bold; margin-bottom: 15px; }
+        #loader { color: #8f9779; font-weight: bold; margin-bottom: 20px; }
         
         .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { visibility: hidden !important; pointer-events: none !important; }
         .flatpickr-day.booked-date { background-color: #e74c3c !important; color: white !important; opacity: 0.8 !important; transform: scale(0.9); border-radius: 50% !important; border: none !important; }
@@ -29,10 +41,10 @@
         .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange { background-color: #8f9779 !important; color: white !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important; }
         .flatpickr-day.inRange { background-color: #dce0d1 !important; color: #2c3e50 !important; border: none !important; border-radius: 50% !important; transform: scale(0.9) !important; box-shadow: none !important; }
 
-        /* Стиль для фінального чеку */
-        #summary-content { text-align: left; background: #fff; padding: 15px; border-radius: 8px; font-size: 14px; line-height: 1.6; border: 2px dashed #8f9779; margin-bottom: 15px; }
-        #summary-content b { color: #2c3e50; }
-        .summary-disclaimer { font-size: 12px; color: #7f8c8d; border-top: 1px solid #e0e0e0; padding-top: 10px; margin-top: 10px; }
+        /* Стиль для фінального чеку - зробив його більш "паперовим" */
+        #summary-content { text-align: left; background: #fffdf9; padding: 20px; border-radius: 12px; font-size: 15px; line-height: 1.7; border: 2px dashed #dce0d1; margin-bottom: 25px; box-shadow: inset 0 0 20px rgba(143, 151, 121, 0.05); }
+        #summary-content b { color: #2c3e50; font-weight: 700; }
+        .summary-disclaimer { font-size: 13px; color: #7f8c8d; border-top: 1px solid #e0e0e0; padding-top: 15px; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -51,32 +63,32 @@
         <div id="loader">⏳ Звіряємо бортові журнали...</div>
         <div id="calendar-wrapper" style="display: none;">
             <input type="text" id="inlineCalendar" style="display:none;">
-            <button id="nextBtnStep1" style="display:none;" onclick="goToStep2()">Продовжити бронювання</button>
+            <button id="nextBtnStep1" style="display:none; margin-top: 20px;" onclick="goToStep2()">Продовжити бронювання</button>
         </div>
     </div>
 
     <div id="step-2" class="step-container">
         <div id="guest-buttons" class="guest-grid"></div>
-        <button class="btn-outline" onclick="goBack(1)" style="padding: 10px; font-size: 14px; margin-top: 5px;">Назад</button>
+        <button class="btn-outline" onclick="goBack(1)" style="padding: 12px; font-size: 15px; margin-top: 10px;">Назад</button>
     </div>
 
     <div id="step-3" class="step-container">
         <button onclick="goToStep4('Так')">🐶 Так, ми з хвостиком</button>
         <button class="btn-outline" onclick="goToStep4('Ні')">Ні, без тварин</button>
-        <button class="btn-outline" onclick="goBack(2)" style="border: none; margin-top: 10px;">Назад</button>
+        <button class="btn-outline" onclick="goBack(2)" style="border: none; margin-top: 15px; padding: 12px;">Назад</button>
     </div>
 
     <div id="step-4" class="step-container">
         <button onclick="submitData('Так')">♨️ Так, обов'язково!</button>
         <button class="btn-outline" onclick="submitData('Ні')">Ні, дякую</button>
-        <button class="btn-outline" onclick="goBack(3)" style="border: none; margin-top: 10px;">Назад</button>
+        <button class="btn-outline" onclick="goBack(3)" style="border: none; margin-top: 15px; padding: 12px;">Назад</button>
     </div>
 
     <div id="step-5" class="step-container">
-        <h3 style="color: #2c3e50; margin-top: 0; font-size: 18px;">Капітан підготував чек 📜</h3>
+        <h3 style="color: #2c3e50; margin-top: 0; font-size: 20px; margin-bottom: 20px;">Капітан підготував чек 📜</h3>
         <div id="summary-content"></div>
-        <button onclick="confirmBooking()">✅ Підтвердити та забронювати</button>
-        <button class="btn-outline" onclick="cancelAndRestart()">🔄 Почати спочатку</button>
+        <button class="final-btn" onclick="confirmBooking()">✅ Підтвердити та забронювати</button>
+        <button class="btn-outline final-btn" onclick="cancelAndRestart()">🔄 Почати спочатку</button>
     </div>
 
     <div id="message">⚓ Перевіряємо та бронюємо...</div>
@@ -96,7 +108,7 @@
 
         const checkDatesUrl = "https://script.google.com/macros/s/AKfycbzsTNRpYZ38kHrurbQ9q289W7PJdrPDr614Zjc07FiyMy663CJowAl_Rtnsftwb_jQQ/exec";
         
-        // ⚠️ ВАЖЛИВО: Заміни це посилання на своє НОВЕ посилання після розгортання скрипту!
+        // ⚠️ ВАЖЛИВО: Заміни це посилання на своє АКТУАЛЬНЕ посилання на скрипт бронювання!
         const bookUrl = "https://script.google.com/macros/s/AKfycbwQNcWFZPXQHNY4VRUUujMIqJsHXA5O-vNmvKICxwQfiJfQH71AZlHQUU74OSFfwEOxrw/exec";
 
         let fpInstance = null; 
@@ -182,8 +194,9 @@
 
             const msgDiv = document.getElementById('message');
             msgDiv.style.display = 'block'; msgDiv.style.color = "#8f9779";
+            // 🔥 Оновлений текст лоадера 🔥
             msgDiv.innerText = "⚓ Отримуємо точний розрахунок від Капітана..."; 
-            updateHeader("Оформлюємо чек", "Перевіряємо ціни у Bookmenow...");
+            updateHeader("Оформлюємо чек", "Зачекайте кілька секунд...");
 
             const finalUrl = `${bookUrl}?action=book&userId=${userId}&checkIn=${finalCheckIn}&checkOut=${finalCheckOut}&guests=${finalGuests}&pets=${finalPets}&chan=${chanAnswer}&roomId=${finalRoomId}&guestName=${encodeURIComponent(guestName)}&guestPhone=${encodeURIComponent(guestPhone)}`;
 
